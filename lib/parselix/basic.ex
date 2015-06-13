@@ -46,4 +46,20 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "many" do
+    fn target, option, position ->
+      (many = fn target, position, many ->
+        case option.(target, position) do
+            {:ok, ast, remainder, position} ->
+              case many.(remainder, position, many) do
+                {:ok, next_ast, remainder, position} -> {:ok, [ast | next_ast], remainder, position}
+                x -> {:ok, [ast], remainder, position}
+              end
+            x -> {:ok, [], target, position}
+          end
+      end
+      many.(target, position, many))
+    end
+  end
+
 end
