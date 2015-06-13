@@ -12,8 +12,6 @@ defmodule Parselix do
 
   defmodule Position, do: defstruct index: 0, vertical: 0, horizontal: 0
 
-  defmodule Token, do: defstruct lexeme: nil, token: nil, vertical: nil, horizontal: nil, size: nil
-
   defmodule AST, do: defstruct label: nil, tree: nil, position: %Position{}
 
   def get_position(current, target, remainder) do
