@@ -19,4 +19,31 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "option" do
+    fn target, option, position ->
+      case option.(target, position) do
+        {:ok, _, _, _} = x -> x
+        _ -> {:ok, :empty, target, position}
+      end
+    end
+  end
+
+  parser "sequence" do
+    fn target, option, position ->
+      (seq = fn
+        target, position, [head | tail], seq ->
+          case head.(target, position) do
+            {:ok, ast, remainder, position} ->
+              case seq.(remainder, position, tail, seq) do
+                {:ok, next_ast, remainder, position} -> {:ok, [ast | next_ast], remainder, position}
+                x -> x
+              end
+            x -> x
+          end
+        target, position, [], _ -> {:ok, [], target, position}
+      end
+      seq.(target, position, option, seq))
+    end
+  end
+
 end
