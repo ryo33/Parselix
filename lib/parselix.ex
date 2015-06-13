@@ -50,10 +50,11 @@ defmodule Parselix do
       def unquote(parse_name)(option) do
         fn target, current_position ->
           case (unquote(block)).(target, option, current_position) do
-            {:ok, tree, remainder, position} -> {:ok, %AST{label: unquote(name), tree: tree, position: current_position}, remainder, position}
-            {:ok, tree, remainder} -> {:ok, %AST{label: unquote(name), tree: tree, position: current_position}, remainder, get_position(current_position, target, remainder)}
-            {:error, message} -> {:error, unquote(name) <> " " <> message}
-            x -> {:error, unquote(name) <> " returns a misformed result", x}
+            {:ok, children, remainder, position} -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, position}
+            {:ok, children, remainder} -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, get_position(current_position, target, remainder)}
+            {:error, message, position} -> {:error, "[" <> unquote(name) <> "] " <> message, position}
+            {:error, message} -> {:error, "[" <> unquote(name) <> "] " <> message, current_position}
+            x -> {:error, "[" <> unquote(name) <> "] returns a misformed result", current_position}
           end
         end
       end
