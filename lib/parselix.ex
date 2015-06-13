@@ -33,6 +33,17 @@ defmodule Parselix do
     }
   end
 
+  def unfold(%AST{children: %AST{} = children}), do: children
+
+  def flat(children) do
+    case children do
+      [head | tail] -> flat(head) ++ flat(tail)
+      %AST{children: children} -> flat(children)
+      [] -> []
+      x -> [x]
+    end
+  end
+
   defmacro parser(name, do: block) do
     parse_name = String.to_atom("parser_" <> name)
     quote do
