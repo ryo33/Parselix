@@ -12,7 +12,7 @@ defmodule Parselix do
 
   defmodule Position, do: defstruct index: 0, vertical: 0, horizontal: 0
 
-  defmodule AST, do: defstruct label: nil, tree: nil, position: %Position{}
+  defmodule AST, do: defstruct label: nil, children: nil, position: %Position{}
 
   def get_position(current, target, remainder) do
     used = String.slice target, 0, String.length(target) - String.length(remainder)
