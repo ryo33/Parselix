@@ -50,7 +50,7 @@ defmodule Parselix do
       def unquote(parse_name)(option) do
         fn target, current_position ->
           case (unquote(block)).(target, option, current_position) do
-            {:ok, children, remainder, position} -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, position}
+            {:ok, children, remainder, position} -> {:ok, children, remainder, position}
             {:ok, children, remainder} -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, get_position(current_position, target, remainder)}
             {:error, message, position} -> {:error, "[" <> unquote(name) <> "] " <> message, position}
             {:error, message} -> {:error, "[" <> unquote(name) <> "] " <> message, current_position}
