@@ -43,16 +43,33 @@ defmodule Parselix do
   end
 
   defmacro parser(name, do: block) do
-    parse_name = String.to_atom("parser_" <> name)
+    parser_name = String.to_atom("parser_" <> name)
     quote do
-      def unquote(parse_name)(option) do
+      def unquote(parser_name)(option) do
+        fn target, current_position ->
+          case (unquote(block)).(target, option, current_position) do
+            {:ok, children, remainder, position} -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, position}
+            {:ok, children, remainder} -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, get_position(current_position, target, remainder)}
+            {:error, message, position} -> {:error, "[" <> unquote("parser_" <> name) <> "] " <> message, position}
+            {:error, message} -> {:error, "[" <> unquote("parser_" <> name) <> "] " <> message, current_position}
+            x -> {:error, "[" <> unquote("parser_" <> name) <> "] returns a misformed result.", current_position}
+          end
+        end
+      end
+    end
+  end
+
+  defmacro combinator(name, do: block) do
+    combinator_name = String.to_atom("combinator_" <> name)
+    quote do
+      def unquote(combinator_name)(option) do
         fn target, current_position ->
           case (unquote(block)).(target, option, current_position) do
             {:ok, children, remainder, position} -> {:ok, children, remainder, position}
-            {:ok, children, remainder} -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, get_position(current_position, target, remainder)}
-            {:error, message, position} -> {:error, "[" <> unquote(name) <> "] " <> message, position}
-            {:error, message} -> {:error, "[" <> unquote(name) <> "] " <> message, current_position}
-            x -> {:error, "[" <> unquote(name) <> "] returns a misformed result", current_position}
+            {:ok, children, remainder} -> {:ok, children, remainder, get_position(current_position, target, remainder)}
+            {:error, message, position} -> {:error, message, position}
+            {:error, message, _} -> {:error, message, current_position}
+            x -> {:error, "[" <> unquote("combinator_" <> name) <> "] returns a misformed result.", current_position}
           end
         end
       end
