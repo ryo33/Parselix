@@ -7,7 +7,7 @@ defmodule Parselix.Basic do
     end
   end
 
-  combinator "choice" do
+  parser "choice" do
     fn target, option, position ->
       case (Enum.map(option, fn parser -> parser.(target, position) end)
       |> Enum.find fn
@@ -19,7 +19,7 @@ defmodule Parselix.Basic do
     end
   end
 
-  combinator "option" do
+  parser "option" do
     fn target, option, position ->
       case option.(target, position) do
         {:ok, _, _, _} = x -> x
@@ -28,7 +28,7 @@ defmodule Parselix.Basic do
     end
   end
 
-  combinator "sequence" do
+  parser "sequence" do
     fn target, option, position ->
       (seq = fn
         target, position, [head | tail], seq ->
@@ -46,7 +46,7 @@ defmodule Parselix.Basic do
     end
   end
 
-  combinator "many" do
+  parser "many" do
     fn target, option, position ->
       (many = fn target, position, many ->
         case option.(target, position) do
@@ -62,7 +62,7 @@ defmodule Parselix.Basic do
     end
   end
 
-  combinator "dump" do
+  parser "dump" do
     fn target, option, position ->
       case option.(target, position) do
         {:ok, _, remainder, position} -> {:ok, :empty, remainder, position}
@@ -71,9 +71,9 @@ defmodule Parselix.Basic do
     end
   end
 
-  combinator "ignore" do
+  parser "ignore" do
     fn target, option, position ->
-      combinator_dump(combinator_option(option)).(target, position)
+      dump(option(option)).(target, position)
     end
   end
 
