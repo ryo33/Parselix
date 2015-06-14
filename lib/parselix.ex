@@ -6,7 +6,6 @@ defmodule Parselix do
       alias Parselix.Position, as: Position
       alias Parselix.Token, as: Token
       alias Parselix.AST, as: AST
-      import Parselix.Basic
     end
   end
 

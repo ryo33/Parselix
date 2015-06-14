@@ -1,6 +1,7 @@
 defmodule BasicTest do
   use ExUnit.Case
   use Parselix
+  import Parselix.Basic
 
   test "token" do
     assert parser_token("abc").("abcdef", %Position{})

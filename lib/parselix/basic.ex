@@ -1,5 +1,5 @@
 defmodule Parselix.Basic do
-  import Parselix
+  use Parselix
 
   parser "token" do
     fn target, option, _ ->
