@@ -126,6 +126,12 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "many_1_c" do
+    fn target, option, position ->
+      concat(sequence_c([wrap(option), many(option)])).(target, position)
+    end
+  end
+
   parser "dump" do
     fn target, option, position ->
       case option.(target, position) do

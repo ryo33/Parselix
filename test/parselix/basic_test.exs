@@ -81,6 +81,13 @@ defmodule BasicTest do
     == {:error, "There is not token.", %Position{index: 0, vertical: 0, horizontal: 0}}
   end
 
+  test "many_1_c" do
+    assert many_1_c(sequence([token("a"), sequence([token("b"), token("c")])])).("abcabcabc", %Position{})
+    == {:ok, ["a", ["b", "c"], "a", ["b", "c"], "a", ["b", "c"]], "", position(9, 0, 9)}
+    assert many_1_c(sequence([token("a"), sequence([token("b"), token("c")])])).("dbcabcabc", %Position{})
+    == {:error, "There is not token.", position(0, 0, 0)}
+  end
+
   test "dump" do
     assert dump(token("abc")).("abcdef", %Position{})
     == {:ok, :empty, "def", position(3, 0, 3)}
