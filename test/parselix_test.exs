@@ -9,8 +9,8 @@ defmodule ParselTest do
     == %Position{index: 7, vertical: 4, horizontal: 1}
   end
 
-  test "unfold" do
-    assert unfold(%AST{children: %AST{children: "a"}})
+  test "unwrap" do
+    assert unwrap(%AST{children: %AST{children: "a"}})
     == %AST{children: "a"}
   end
 
