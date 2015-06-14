@@ -54,6 +54,11 @@ defmodule BasicTest do
     == {:ok, ["a", "b", ["c", "d"], "e"], "", position(5, 0, 5)}
   end
 
+  test "wrap" do
+    assert wrap(token("a")).("abc", position(0, 0, 0))
+    == {:ok, ["a"], "bc", position(1, 0, 1)}
+  end
+
   test "sequence_c" do
     assert sequence_c([token("a"), sequence([token("b"), sequence([token("c"), token("d")])]), sequence([token("e")])]).("abcde", %Position{})
     == {:ok, ["a", "b", ["c", "d"], "e"], "", position(5, 0, 5)}

@@ -99,6 +99,15 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "wrap" do
+    fn target, option, position ->
+      case option.(target, position) do
+        {:ok, x, remainder, position} -> {:ok, [x], remainder, position}
+        x -> x
+      end
+    end
+  end
+
   parser "sequence_c" do
     fn target, option, position ->
       concat(sequence(option)).(target, position)
@@ -113,7 +122,7 @@ defmodule Parselix.Basic do
 
   parser "many_1" do
     fn target, option, position ->
-      sequence_c([option, many(option)]).(target, position)
+      sequence_c([wrap(option), many(option)]).(target, position)
     end
   end
 
