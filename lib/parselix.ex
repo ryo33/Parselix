@@ -32,15 +32,6 @@ defmodule Parselix do
     }
   end
 
-  def flat(children) do
-    case children do
-      [head | tail] -> flat(head) ++ flat(tail)
-      %AST{children: children} -> flat(children)
-      [] -> []
-      x -> [x]
-    end
-  end
-
   defmacro position(index, vertical, horizontal), do: quote do: %Position{index: unquote(index), vertical: unquote(vertical), horizontal: unquote(horizontal)}
 
   defmacro parser(name, do: block) do

@@ -9,9 +9,4 @@ defmodule ParselTest do
     == %Position{index: 7, vertical: 4, horizontal: 1}
   end
 
-  test "flat" do
-    assert flat(%AST{children: %AST{children: [%AST{children: ["a", %AST{children: "b"}]}, %AST{children: "c"}]}})
-    == ["a", "b", "c"]
-  end
-
 end
