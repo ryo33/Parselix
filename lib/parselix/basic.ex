@@ -62,4 +62,19 @@ defmodule Parselix.Basic do
     end
   end
 
+  combinator "dump" do
+    fn target, option, position ->
+      case option.(target, position) do
+        {:ok, _, remainder, position} -> {:ok, :empty, remainder, position}
+        x -> x
+      end
+    end
+  end
+
+  combinator "ignore" do
+    fn target, option, position ->
+      combinator_dump(combinator_option(option)).(target, position)
+    end
+  end
+
 end

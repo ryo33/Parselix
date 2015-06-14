@@ -43,4 +43,18 @@ defmodule BasicTest do
     == {:ok, [], "aabcabcabcdef", %Position{index: 0, vertical: 0, horizontal: 0}}
   end
 
+  test "dump" do
+    assert combinator_dump(parser_token("abc")).("abcdef", %Position{})
+    == {:ok, :empty, "def", position(3, 0, 3)}
+    assert combinator_dump(parser_token("aac")).("abcdef", %Position{})
+    == {:error, "[parser_token] There is not token.", position(0, 0, 0)}
+  end
+
+  test "ignore" do
+    assert combinator_ignore(parser_token("abc")).("abcdef", %Position{})
+    == {:ok, :empty, "def", position(3, 0, 3)}
+    assert combinator_ignore(parser_token("aac")).("abcdef", %Position{})
+    == {:ok, :empty, "abcdef", position(0, 0, 0)}
+  end
+
 end
