@@ -42,6 +42,8 @@ defmodule Parselix do
     end
   end
 
+  defmacro position(index, vertical, horizontal), do: quote do: %Position{index: unquote(index), vertical: unquote(vertical), horizontal: unquote(horizontal)}
+
   defmacro parser(name, do: block) do
     parser_name = String.to_atom("parser_" <> name)
     quote do
