@@ -33,8 +33,6 @@ defmodule Parselix do
     }
   end
 
-  def unwrap(%AST{children: %AST{} = children}), do: children
-
   def flat(children) do
     case children do
       [head | tail] -> flat(head) ++ flat(tail)
