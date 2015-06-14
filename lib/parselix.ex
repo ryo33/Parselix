@@ -13,8 +13,8 @@ defmodule Parselix do
 
   defmodule AST, do: defstruct label: nil, children: nil, position: %Position{}
 
-  def get_position(current, target, remainder) do
-    used = String.slice target, 0, String.length(target) - String.length(remainder)
+  def get_position(current, target, consumed) when is_integer(consumed) do
+    used = String.slice target, 0, consumed
     used_list = String.to_char_list used
     vertical = used_list |> Enum.count fn x -> x === ?\n end
     get_horizontal = fn
@@ -32,6 +32,10 @@ defmodule Parselix do
     }
   end
 
+  def get_position(current, target, remainder) when is_binary(remainder) do
+    get_position current, target, String.length(target) - String.length(remainder)
+  end
+
   defmacro position(index, vertical, horizontal), do: quote do: %Position{index: unquote(index), vertical: unquote(vertical), horizontal: unquote(horizontal)}
 
   defmacro parser(name, do: block) do
@@ -42,7 +46,11 @@ defmodule Parselix do
         fn target, current_position ->
           case (unquote(block)).(target, option, current_position) do
             {:ok, children, remainder, position} -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, position}
-            {:ok, children, remainder} -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, get_position(current_position, target, remainder)}
+            {:ok, children, remainder} when is_binary(remainder) -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, get_position(current_position, target, remainder)}
+            {:ok, children, consumed} when is_integer(consumed) ->
+              {:ok,
+                %AST{label: unquote(name), children: children, position: current_position
+                }, String.slice(target, Range.new(consumed, -1)), get_position(current_position, target, consumed)}
             {:error, message, position} -> {:error, "[" <> unquote(name) <> "] " <> message, position}
             {:error, message} -> {:error, "[" <> unquote(name) <> "] " <> message, current_position}
             x -> {:error, "\"" <> unquote(name) <> "\" returns a misformed result.\n#{inspect x}", current_position}
@@ -53,7 +61,8 @@ defmodule Parselix do
         fn target, current_position ->
           case (unquote(block)).(target, option, current_position) do
             {:ok, children, remainder, position} = x -> x
-            {:ok, children, remainder} -> {:ok, children, remainder, get_position(current_position, target, remainder)}
+            {:ok, children, remainder} when is_binary(remainder) -> {:ok, children, remainder, get_position(current_position, target, remainder)}
+            {:ok, children, consumed} when is_integer(consumed) -> {:ok, children, String.slice(target, Range.new(consumed, -1)), get_position(current_position, target, consumed)}
             {:error, message, position} = x -> x
             {:error, message} -> {:error, message, current_position}
             x -> {:error, "\"" <> unquote(name) <> "\" returns a misformed result.\n#{inspect x}", current_position}
