@@ -62,6 +62,61 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "flat" do
+    fn target, option, position ->
+      (flat = fn children, flat ->
+        case children do
+          [head | tail] -> flat.(head, flat) ++ flat.(tail, flat)
+          %AST{children: children} -> flat.(children, flat)
+          [] -> []
+          x -> [x]
+        end
+      end
+      case option.(target, position) do
+        {:ok, children, remainder, position} -> {:ok, flat.(children, flat), remainder, position}
+        x -> x
+      end)
+    end
+  end
+
+  parser "concat" do
+    fn target, option, position ->
+      (concat = fn children, concat ->
+        case children do
+          [head | tail] ->
+            case head do
+              head when is_list(head) -> head ++ concat.(tail, concat)
+              head -> [head | concat.(tail, concat)]
+            end
+          [] -> []
+          x -> [x]
+        end
+      end
+      case option.(target, position) do
+        {:ok, children, remainder, position} -> {:ok, concat.(children, concat), remainder, position}
+        x -> x
+      end)
+    end
+  end
+
+  parser "sequence_c" do
+    fn target, option, position ->
+      concat(sequence(option)).(target, position)
+    end
+  end
+
+  parser "many_c" do
+    fn target, option, position ->
+      concat(many(option)).(target, position)
+    end
+  end
+
+  parser "many_1" do
+    fn target, option, position ->
+      sequence_c([option, many(option)]).(target, position)
+    end
+  end
+
   parser "dump" do
     fn target, option, position ->
       case option.(target, position) do

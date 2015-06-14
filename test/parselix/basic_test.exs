@@ -44,6 +44,38 @@ defmodule BasicTest do
     == {:ok, [], "aabcabcabcdef", %Position{index: 0, vertical: 0, horizontal: 0}}
   end
 
+  test "flat" do
+    assert flat(sequence([token("a"), sequence([token("b"), sequence([token("c"), token("d")])]), sequence([token("e")])])).("abcde", %Position{})
+    == {:ok, ["a", "b", "c", "d", "e"], "", position(5, 0, 5)}
+  end
+
+  test "concat" do
+    assert concat(sequence([token("a"), sequence([token("b"), sequence([token("c"), token("d")])]), sequence([token("e")])])).("abcde", %Position{})
+    == {:ok, ["a", "b", ["c", "d"], "e"], "", position(5, 0, 5)}
+  end
+
+  test "sequence_c" do
+    assert sequence_c([token("a"), sequence([token("b"), sequence([token("c"), token("d")])]), sequence([token("e")])]).("abcde", %Position{})
+    == {:ok, ["a", "b", ["c", "d"], "e"], "", position(5, 0, 5)}
+  end
+
+  test "many_c" do
+    assert many_c(sequence([token("a"), sequence([token("b"), token("c")])])).("abcabcabc", %Position{})
+    == {:ok, ["a", ["b", "c"], "a", ["b", "c"], "a", ["b", "c"]], "", position(9, 0, 9)}
+  end
+
+  test "many_1" do
+    assert many_1(token_l("abc")).("abcabcabcdef", %Position{})
+    == {:ok,
+        [
+          %AST{label: "token", children: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
+          %AST{label: "token", children: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
+          %AST{label: "token", children: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
+        ], "def", %Position{index: 9, vertical: 0, horizontal: 9}}
+    assert many_1(token("abc")).("aabcabcabcdef", %Position{})
+    == {:error, "There is not token.", %Position{index: 0, vertical: 0, horizontal: 0}}
+  end
+
   test "dump" do
     assert dump(token("abc")).("abcdef", %Position{})
     == {:ok, :empty, "def", position(3, 0, 3)}
