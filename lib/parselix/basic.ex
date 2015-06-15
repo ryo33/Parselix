@@ -85,6 +85,7 @@ defmodule Parselix.Basic do
         case children do
           [head | tail] ->
             case head do
+              :empty -> concat.(tail, concat)
               head when is_list(head) -> head ++ concat.(tail, concat)
               head -> [head | concat.(tail, concat)]
             end

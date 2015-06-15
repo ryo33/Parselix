@@ -52,6 +52,8 @@ defmodule BasicTest do
   test "concat" do
     assert concat(sequence([token("a"), sequence([token("b"), sequence([token("c"), token("d")])]), sequence([token("e")])])).("abcde", %Position{})
     == {:ok, ["a", "b", ["c", "d"], "e"], "", position(5, 0, 5)}
+    assert sequence_c([ignore(token("abc")), token("def")]).("abcdef", position())
+    == {:ok, ["def"], "", position(6, 0, 6)}
   end
 
   test "wrap" do
