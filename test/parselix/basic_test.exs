@@ -8,6 +8,11 @@ defmodule BasicTest do
     == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
   end
 
+  test "char" do
+    assert many(char("abc")).("abccbad", position())
+    == {:ok, ["a", "b", "c", "c", "b", "a"], "d", position(6, 0, 6)}
+  end
+
   test "choice" do
     assert (choice([token("abcdefg"), token("bcd"), token("abc")])).("abcdef", %Position{})
     == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}

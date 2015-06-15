@@ -7,6 +7,10 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "char" do
+    fn target, option, position -> choice(String.codepoints(option) |> Enum.map fn x -> token(x) end).(target, position) end
+  end
+
   parser "choice" do
     fn target, option, position ->
       case (Enum.map(option, fn parser -> parser.(target, position) end)
