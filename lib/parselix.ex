@@ -42,7 +42,7 @@ defmodule Parselix do
     parser_name = String.to_atom(name)
     parser_l_name = String.to_atom(name <> "_l")
     quote do
-      def unquote(parser_l_name)(option) do
+      def unquote(parser_l_name)(option \\ nil) do
         fn target, current_position ->
           case (unquote(block)).(target, option, current_position) do
             {:ok, children, remainder, position} -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, position}
@@ -57,7 +57,7 @@ defmodule Parselix do
           end
         end
       end
-      def unquote(parser_name)(option) do
+      def unquote(parser_name)(option \\ nil) do
         fn target, current_position ->
           case (unquote(block)).(target, option, current_position) do
             {:ok, children, remainder, position} = x -> x
