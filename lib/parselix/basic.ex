@@ -66,6 +66,15 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "map" do
+    fn target, {parser, func}, position ->
+      case parser.(target, position) do
+        {:ok, result, remainder, position} -> {:ok, func.(result), remainder, position}
+        x -> x
+      end
+    end
+  end
+
   parser "flat" do
     fn target, option, position ->
       (flat = fn children, flat ->

@@ -49,6 +49,11 @@ defmodule BasicTest do
     == {:ok, [], "aabcabcabcdef", %Position{index: 0, vertical: 0, horizontal: 0}}
   end
 
+  test "map" do
+    assert map({token("123"), fn x -> String.to_integer x end}).("123456", position())
+    == {:ok, 123, "456", position(3, 0, 3)}
+  end
+
   test "flat" do
     assert flat(sequence([token("a"), sequence([token("b"), sequence([token("c"), token("d")])]), sequence([token("e")])])).("abcde", %Position{})
     == {:ok, ["a", "b", "c", "d", "e"], "", position(5, 0, 5)}
