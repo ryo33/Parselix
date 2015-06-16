@@ -1,14 +1,14 @@
 defmodule Parselix.Basic do
   use Parselix
 
-  parser "token" do
+  parser "string" do
     fn target, option, _ ->
-      if String.starts_with?(target, option), do: {:ok, option, String.slice(target, Range.new(String.length(option), -1))}, else: {:error, "There is not token."}
+      if String.starts_with?(target, option), do: {:ok, option, String.slice(target, Range.new(String.length(option), -1))}, else: {:error, "There is not string."}
     end
   end
 
   parser "char" do
-    fn target, option, position -> choice(String.codepoints(option) |> Enum.map fn x -> token(x) end).(target, position) end
+    fn target, option, position -> choice(String.codepoints(option) |> Enum.map fn x -> string(x) end).(target, position) end
   end
 
   parser "choice" do

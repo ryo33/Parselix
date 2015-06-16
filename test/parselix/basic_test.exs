@@ -3,8 +3,8 @@ defmodule BasicTest do
   use Parselix
   import Parselix.Basic
 
-  test "token" do
-    assert token("abc").("abcdef", %Position{})
+  test "string" do
+    assert string("abc").("abcdef", %Position{})
     == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
   end
 
@@ -14,103 +14,103 @@ defmodule BasicTest do
   end
 
   test "choice" do
-    assert (choice([token("abcdefg"), token("bcd"), token("abc")])).("abcdef", %Position{})
+    assert (choice([string("abcdefg"), string("bcd"), string("abc")])).("abcdef", %Position{})
     == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
   end
 
   test "option" do
-    assert option(token("abc")).("abcdef", %Position{})
+    assert option(string("abc")).("abcdef", %Position{})
     == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
-    assert option(token("bc")).("abcdef", %Position{index: 100})
+    assert option(string("bc")).("abcdef", %Position{index: 100})
     == {:ok, :empty, "abcdef", %Position{index: 100}}
   end
 
   test "sequence" do
-    assert sequence([token_l("abc"), token_l("def"), token_l("ghi")]).("abcdefghijkl", %Position{})
+    assert sequence([string_l("abc"), string_l("def"), string_l("ghi")]).("abcdefghijkl", %Position{})
     == {:ok,
         [
-          %AST{label: "token", children: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
-          %AST{label: "token", children: "def", position: %Position{index: 3, vertical: 0, horizontal: 3}},
-          %AST{label: "token", children: "ghi", position: %Position{index: 6, vertical: 0, horizontal: 6}}
+          %AST{label: "string", children: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
+          %AST{label: "string", children: "def", position: %Position{index: 3, vertical: 0, horizontal: 3}},
+          %AST{label: "string", children: "ghi", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "jkl", %Position{index: 9, vertical: 0, horizontal: 9}}
-    assert sequence([token("abc"), token("ddf"), token("ghi")]).("abcdefghijkl", %Position{})
-    == {:error, "There is not token.", %Parselix.Position{horizontal: 3, index: 3, vertical: 0}}
+    assert sequence([string("abc"), string("ddf"), string("ghi")]).("abcdefghijkl", %Position{})
+    == {:error, "There is not string.", %Parselix.Position{horizontal: 3, index: 3, vertical: 0}}
   end
 
   test "many" do
-    assert many(token_l("abc")).("abcabcabcdef", %Position{})
+    assert many(string_l("abc")).("abcabcabcdef", %Position{})
     == {:ok,
         [
-          %AST{label: "token", children: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
-          %AST{label: "token", children: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
-          %AST{label: "token", children: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
+          %AST{label: "string", children: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
+          %AST{label: "string", children: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
+          %AST{label: "string", children: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "def", %Position{index: 9, vertical: 0, horizontal: 9}}
-    assert many(token("abc")).("aabcabcabcdef", %Position{})
+    assert many(string("abc")).("aabcabcabcdef", %Position{})
     == {:ok, [], "aabcabcabcdef", %Position{index: 0, vertical: 0, horizontal: 0}}
   end
 
   test "map" do
-    assert map({token("123"), fn x -> String.to_integer x end}).("123456", position())
+    assert map({string("123"), fn x -> String.to_integer x end}).("123456", position())
     == {:ok, 123, "456", position(3, 0, 3)}
   end
 
   test "flat" do
-    assert flat(sequence([token("a"), sequence([token("b"), sequence([token("c"), token("d")])]), sequence([token("e")])])).("abcde", %Position{})
+    assert flat(sequence([string("a"), sequence([string("b"), sequence([string("c"), string("d")])]), sequence([string("e")])])).("abcde", %Position{})
     == {:ok, ["a", "b", "c", "d", "e"], "", position(5, 0, 5)}
   end
 
   test "concat" do
-    assert concat(sequence([token("a"), sequence([token("b"), sequence([token("c"), token("d")])]), sequence([token("e")])])).("abcde", %Position{})
+    assert concat(sequence([string("a"), sequence([string("b"), sequence([string("c"), string("d")])]), sequence([string("e")])])).("abcde", %Position{})
     == {:ok, ["a", "b", ["c", "d"], "e"], "", position(5, 0, 5)}
-    assert sequence_c([ignore(token("abc")), token("def")]).("abcdef", position())
+    assert sequence_c([ignore(string("abc")), string("def")]).("abcdef", position())
     == {:ok, ["def"], "", position(6, 0, 6)}
   end
 
   test "wrap" do
-    assert wrap(token("a")).("abc", position(0, 0, 0))
+    assert wrap(string("a")).("abc", position(0, 0, 0))
     == {:ok, ["a"], "bc", position(1, 0, 1)}
   end
 
   test "sequence_c" do
-    assert sequence_c([token("a"), sequence([token("b"), sequence([token("c"), token("d")])]), sequence([token("e")])]).("abcde", %Position{})
+    assert sequence_c([string("a"), sequence([string("b"), sequence([string("c"), string("d")])]), sequence([string("e")])]).("abcde", %Position{})
     == {:ok, ["a", "b", ["c", "d"], "e"], "", position(5, 0, 5)}
   end
 
   test "many_c" do
-    assert many_c(sequence([token("a"), sequence([token("b"), token("c")])])).("abcabcabc", %Position{})
+    assert many_c(sequence([string("a"), sequence([string("b"), string("c")])])).("abcabcabc", %Position{})
     == {:ok, ["a", ["b", "c"], "a", ["b", "c"], "a", ["b", "c"]], "", position(9, 0, 9)}
   end
 
   test "many_1" do
-    assert many_1(token_l("abc")).("abcabcabcdef", %Position{})
+    assert many_1(string_l("abc")).("abcabcabcdef", %Position{})
     == {:ok,
         [
-          %AST{label: "token", children: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
-          %AST{label: "token", children: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
-          %AST{label: "token", children: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
+          %AST{label: "string", children: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
+          %AST{label: "string", children: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
+          %AST{label: "string", children: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "def", %Position{index: 9, vertical: 0, horizontal: 9}}
-    assert many_1(token("abc")).("aabcabcabcdef", %Position{})
-    == {:error, "There is not token.", %Position{index: 0, vertical: 0, horizontal: 0}}
+    assert many_1(string("abc")).("aabcabcabcdef", %Position{})
+    == {:error, "There is not string.", %Position{index: 0, vertical: 0, horizontal: 0}}
   end
 
   test "many_1_c" do
-    assert many_1_c(sequence([token("a"), sequence([token("b"), token("c")])])).("abcabcabc", %Position{})
+    assert many_1_c(sequence([string("a"), sequence([string("b"), string("c")])])).("abcabcabc", %Position{})
     == {:ok, ["a", ["b", "c"], "a", ["b", "c"], "a", ["b", "c"]], "", position(9, 0, 9)}
-    assert many_1_c(sequence([token("a"), sequence([token("b"), token("c")])])).("dbcabcabc", %Position{})
-    == {:error, "There is not token.", position(0, 0, 0)}
+    assert many_1_c(sequence([string("a"), sequence([string("b"), string("c")])])).("dbcabcabc", %Position{})
+    == {:error, "There is not string.", position(0, 0, 0)}
   end
 
   test "dump" do
-    assert dump(token("abc")).("abcdef", %Position{})
+    assert dump(string("abc")).("abcdef", %Position{})
     == {:ok, :empty, "def", position(3, 0, 3)}
-    assert dump(token("aac")).("abcdef", %Position{})
-    == {:error, "There is not token.", position(0, 0, 0)}
+    assert dump(string("aac")).("abcdef", %Position{})
+    == {:error, "There is not string.", position(0, 0, 0)}
   end
 
   test "ignore" do
-    assert ignore(token("abc")).("abcdef", %Position{})
+    assert ignore(string("abc")).("abcdef", %Position{})
     == {:ok, :empty, "def", position(3, 0, 3)}
-    assert ignore(token("aac")).("abcdef", %Position{})
+    assert ignore(string("aac")).("abcdef", %Position{})
     == {:ok, :empty, "abcdef", position(0, 0, 0)}
   end
 
