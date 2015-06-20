@@ -13,6 +13,22 @@ defmodule BasicTest do
     == {:ok, ["a", "b", "c", "c", "b", "a"], "d", position(6, 0, 6)}
   end
 
+  test "not_char" do
+    assert not_char("abc").("abc", position)
+    == {:error, "\"a\" appeared.", position(0, 0, 0)}
+    assert many(not_char("def")).("abcd", position)
+    == {:ok, ["a", "b", "c"], "d", position(3, 0, 3)}
+    assert not_char("abc").("", position)
+    == {:error, "EOF appeared.", position}
+  end
+
+  test "any" do
+    assert many(any()).("abc", position)
+    == {:ok, ["a", "b", "c"], "", position(3, 0, 3)}
+    assert any().("", position)
+    == {:error, "EOF appeared.", position}
+  end
+
   test "choice" do
     assert (choice([string("abcdefg"), string("bcd"), string("abc")])).("abcdef", %Position{})
     == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}

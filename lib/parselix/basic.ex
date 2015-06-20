@@ -11,6 +11,22 @@ defmodule Parselix.Basic do
     fn option, target, position -> choice(String.codepoints(option) |> Enum.map fn x -> string(x) end).(target, position) end
   end
 
+  parser "not_char" do
+    fn option, target, position ->
+     case char(option).(target, position) do
+        {:ok, _, _, _} -> {:error, "\"#{String.first target}\" appeared.", position}
+        _ -> any().(target, position)
+      end
+    end
+  end
+
+  parser "any" do
+    fn
+      _, "", position -> {:error, "EOF appeared.", position}
+      _, x, _ -> {:ok, String.first(x), String.slice(x, 1, String.length(x) - 1)}
+    end
+  end
+
   parser "choice" do
     fn option, target, position ->
       case (Enum.map(option, fn parser -> parser.(target, position) end)
