@@ -6,18 +6,16 @@ defmodule Parselix do
       alias Parselix.Position, as: Position
       alias Parselix.Token, as: Token
       alias Parselix.AST, as: AST
-      import Parselix.Basic
+      alias Parselix.Basic, as: Basic
     end
   end
 
   defmodule Position, do: defstruct index: 0, vertical: 0, horizontal: 0
 
-  defmodule Token, do: defstruct lexeme: nil, token: nil, vertical: nil, horizontal: nil, size: nil
+  defmodule AST, do: defstruct label: nil, children: nil, position: %Position{}
 
-  defmodule AST, do: defstruct label: nil, tree: nil, position: %Position{}
-
-  def get_position(current, target, remainder) do
-    used = String.slice target, 0, String.length(target) - String.length(remainder)
+  def get_position(current, target, consumed) when is_integer(consumed) do
+    used = String.slice target, 0, consumed
     used_list = String.to_char_list used
     vertical = used_list |> Enum.count fn x -> x === ?\n end
     get_horizontal = fn
@@ -35,16 +33,40 @@ defmodule Parselix do
     }
   end
 
+  def get_position(current, target, remainder) when is_binary(remainder) do
+    get_position current, target, String.length(target) - String.length(remainder)
+  end
+
+  defmacro position(index \\ 0, vertical \\ 0, horizontal \\ 0), do: quote do: %Position{index: unquote(index), vertical: unquote(vertical), horizontal: unquote(horizontal)}
+
   defmacro parser(name, do: block) do
-    parse_name = String.to_atom("parser_" <> name)
+    parser_name = String.to_atom(name)
+    parser_l_name = String.to_atom(name <> "_l")
     quote do
-      def unquote(parse_name)(option) do
+      def unquote(parser_l_name)(option \\ nil) do
         fn target, current_position ->
-          case (unquote(block)).(target, option, current_position) do
-            {:ok, tree, remainder, position} -> {:ok, %AST{label: unquote(name), tree: tree, position: current_position}, remainder, position}
-            {:ok, tree, remainder} -> {:ok, %AST{label: unquote(name), tree: tree, position: current_position}, remainder, get_position(current_position, target, remainder)}
-            {:error, message} -> {:error, unquote(name) <> " " <> message}
-            x -> {:error, unquote(name) <> " returns a misformed result", x}
+          case (unquote(block)).(option, target, current_position) do
+            {:ok, children, remainder, position} -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, position}
+            {:ok, children, remainder} when is_binary(remainder) -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, get_position(current_position, target, remainder)}
+            {:ok, children, consumed} when is_integer(consumed) ->
+              {:ok,
+                %AST{label: unquote(name), children: children, position: current_position
+                }, String.slice(target, Range.new(consumed, -1)), get_position(current_position, target, consumed)}
+            {:error, message, position} -> {:error, "[" <> unquote(name) <> "] " <> message, position}
+            {:error, message} -> {:error, "[" <> unquote(name) <> "] " <> message, current_position}
+            x -> {:error, "\"" <> unquote(name) <> "\" returns a misformed result.\n#{inspect x}", current_position}
+          end
+        end
+      end
+      def unquote(parser_name)(option \\ nil) do
+        fn target, current_position ->
+          case (unquote(block)).(option, target, current_position) do
+            {:ok, children, remainder, position} = x -> x
+            {:ok, children, remainder} when is_binary(remainder) -> {:ok, children, remainder, get_position(current_position, target, remainder)}
+            {:ok, children, consumed} when is_integer(consumed) -> {:ok, children, String.slice(target, Range.new(consumed, -1)), get_position(current_position, target, consumed)}
+            {:error, message, position} = x -> x
+            {:error, message} -> {:error, message, current_position}
+            x -> {:error, "\"" <> unquote(name) <> "\" returns a misformed result.\n#{inspect x}", current_position}
           end
         end
       end
