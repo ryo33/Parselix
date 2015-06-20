@@ -76,6 +76,26 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "times" do
+    fn option, target, current_position ->
+      (times = fn {parser, time}, target, position, times, count ->
+        case parser.(target, position) do
+          {:ok, ast, remainder, position} ->
+            if count + 1 == time do
+              {:ok, [ast], remainder, position}
+            else
+              case times.(option, remainder, position, times, count + 1) do
+                {:ok, next_ast, remainder, position} -> {:ok, [ast | next_ast], remainder, position}
+                _ -> {:error, "The parser can't parse this #{time} times.", current_position}
+              end
+            end
+          _ -> {:error, "The parser can't parse this #{time} times.", current_position}
+        end
+      end
+      times.(option, target, current_position, times, 0))
+    end
+  end
+
   parser "map" do
     fn {parser, func}, target, position ->
       case parser.(target, position) do

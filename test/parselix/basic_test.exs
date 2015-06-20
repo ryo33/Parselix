@@ -65,6 +65,15 @@ defmodule BasicTest do
     == {:ok, ["abc", "abc", "abc"], "", position(9, 0, 9)}
   end
 
+  test "times" do
+    assert times({string("abc"), 3}).("abcabc", position)
+    == {:error, "The parser can't parse this 3 times.", %Parselix.Position{horizontal: 0, index: 0, vertical: 0}}
+    assert times({string("abc"), 3}).("abcabcabc", position)
+    == {:ok, ["abc", "abc", "abc"], "", position(9, 0, 9)}
+    assert times({string("abc"), 3}).("abcabcabcabc", position)
+    == {:ok, ["abc", "abc", "abc"], "abc", position(9, 0, 9)}
+  end
+
   test "map" do
     assert map({string("123"), fn x -> String.to_integer x end}).("123456", position())
     == {:ok, 123, "456", position(3, 0, 3)}
