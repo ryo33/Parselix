@@ -3,6 +3,13 @@ defmodule BasicTest do
   use Parselix
   import Parselix.Basic
 
+  test "regex" do
+    assert regex(~r/ab*c/).("abbcdef", position)
+    == {:ok, "abbc", "def", position(4, 0, 4)}
+    assert regex(~r/ab*c/).("defabbc", position)
+    == {:error, "The regex does not match.", position}
+  end
+
   test "string" do
     assert string("abc").("abcdef", %Position{})
     == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
