@@ -207,6 +207,16 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "check" do
+    fn {parser, func}, target, position ->
+      case parser.(target, position) do
+        {:ok, result, remainder, position} ->
+          if func.(result) === true, do: {:ok, result, remainder, position}, else: {:error, "#{inspect result} is a bad result."}
+        x -> x
+      end
+    end
+  end
+
   parser "eof" do
     fn
       _, "", position ->

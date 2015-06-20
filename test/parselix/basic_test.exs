@@ -155,6 +155,13 @@ defmodule BasicTest do
     == {:ok, :empty, "abcdef", position(0, 0, 0)}
   end
 
+  test "check" do
+    assert check({string("abc"), fn x -> if x === "abc", do: true end}).("abcdef", position)
+    == {:ok, "abc", "def", position(3, 0, 3)}
+    assert check({string("abc"), fn x -> if x === "xxx", do: true end}).("abcdef", position)
+    == {:error, "\"abc\" is a bad result.", position}
+  end
+
   test "eof" do
     assert eof().("abc", position)
     == {:error, "There is not EOF.", position}
