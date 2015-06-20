@@ -52,17 +52,27 @@ defmodule Parselix.Basic do
 
   parser "many" do
     fn option, target, position ->
-      (many = fn target, position, many ->
+      (many = fn option, target, position, many ->
         case option.(target, position) do
           {:ok, ast, remainder, position} ->
-            case many.(remainder, position, many) do
-              {:ok, next_ast, remainder, position} -> {:ok, [ast | next_ast], remainder, position}
-              _ -> {:ok, [ast], remainder, position}
+            case many.(option, remainder, position, many) do
+              {{:ok, next_ast, remainder, position}, count} -> {{:ok, [ast | next_ast], remainder, position}, count + 1}
+              _ -> {{:ok, [ast], remainder, position}, 1}
             end
-          _ -> {:ok, [], target, position}
+          _ -> {{:ok, [], target, position}, 0}
         end
       end
-      many.(target, position, many))
+      case option do
+        {parser, min..max} ->
+          ({result, count} = many.(parser, target, position, many)
+          if count >= min and count <= max, do: result, else: {:error, "The count is out of the range"})
+        {parser, min} ->
+          ({result, count} = many.(parser, target, position, many)
+          if count >= min, do: result, else: {:error, "The count is out of the range"})
+        parser ->
+          ({result, count} = many.(parser, target, position, many)
+          result)
+      end)
     end
   end
 

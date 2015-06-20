@@ -45,8 +45,24 @@ defmodule BasicTest do
           %AST{label: "string", children: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
           %AST{label: "string", children: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "def", %Position{index: 9, vertical: 0, horizontal: 9}}
-    assert many(string("abc")).("aabcabcabcdef", %Position{})
+    assert many(string("abc")).("aabcabcabcdef", position)
     == {:ok, [], "aabcabcabcdef", %Position{index: 0, vertical: 0, horizontal: 0}}
+    assert many({string("abc"), 3..5}).("abcabc", position)
+    == {:error, "The count is out of the range", position}
+    assert many({string("abc"), 3..5}).("abcabcabc", position)
+    == {:ok, ["abc", "abc", "abc"], "", position(9, 0, 9)}
+    assert many({string("abc"), 3..5}).("abcabcabcabc", position)
+    == {:ok, ["abc", "abc", "abc", "abc"], "", position(12, 0, 12)}
+    assert many({string("abc"), 3..5}).("abcabcabcabcabc", position)
+    == {:ok, ["abc", "abc", "abc", "abc", "abc"], "", position(15, 0, 15)}
+    assert many({string("abc"), 3..5}).("abcabcabcabcabcabc", position)
+    == {:error, "The count is out of the range", position}
+    assert many({string("abc"), 2}).("abc", position)
+    == {:error, "The count is out of the range", position}
+    assert many({string("abc"), 2}).("abcabc", position)
+    == {:ok, ["abc", "abc"], "", position(6, 0, 6)}
+    assert many({string("abc"), 2}).("abcabcabc", position)
+    == {:ok, ["abc", "abc", "abc"], "", position(9, 0, 9)}
   end
 
   test "map" do
