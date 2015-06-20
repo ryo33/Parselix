@@ -1,6 +1,12 @@
 defmodule Parselix.Basic do
   use Parselix
 
+  defmacro __using__(_opts) do
+    quote do
+      import Basic
+    end
+  end
+
   parser "regex" do
     fn regex, target, _ ->
       case (Regex.run regex, target, return: :index) |> Enum.find fn {x, _} -> x == 0 end do
@@ -95,7 +101,7 @@ defmodule Parselix.Basic do
           ({result, count} = many.(parser, target, position, many)
           if count >= min, do: result, else: {:error, "The count is out of the range"})
         parser ->
-          ({result, count} = many.(parser, target, position, many)
+          ({result, _} = many.(parser, target, position, many)
           result)
       end)
     end

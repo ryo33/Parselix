@@ -1,7 +1,7 @@
 defmodule BasicTest do
   use ExUnit.Case
   use Parselix
-  import Parselix.Basic
+  use Basic
 
   test "regex" do
     assert regex(~r/ab*c/).("abbcdef", position)
