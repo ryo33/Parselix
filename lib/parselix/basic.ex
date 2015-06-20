@@ -191,4 +191,12 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "eof" do
+    fn
+      _, "", position ->
+        {:ok, :empty, "", position}
+      _, _, _ -> {:error, "There is not EOF."}
+    end
+  end
+
 end

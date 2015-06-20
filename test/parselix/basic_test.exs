@@ -139,4 +139,13 @@ defmodule BasicTest do
     == {:ok, :empty, "abcdef", position(0, 0, 0)}
   end
 
+  test "eof" do
+    assert eof().("abc", position)
+    == {:error, "There is not EOF.", position}
+    assert eof().("", position)
+    == {:ok, :empty, "", position}
+    assert sequence([string("abc"), eof()]).("abc", position)
+    == {:ok, ["abc", :empty], "", position(3, 0, 3)}
+  end
+
 end
