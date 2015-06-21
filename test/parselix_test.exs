@@ -1,13 +1,12 @@
 defmodule ParselTest do
   use ExUnit.Case
   use Parselix
-  import Parselix.Basic
 
   test "get_position" do
-    assert get_position(%Position{index: 1, vertical: 2, horizontal: 300}, "a\nbc\ndef\nghig", "ef\nghig")
-    == %Position{index: 7, vertical: 4, horizontal: 1}
-    assert get_position(%Position{index: 1, vertical: 2, horizontal: 3}, "a\nbc\ndef\nghig", "ef\nghig")
-    == %Position{index: 7, vertical: 4, horizontal: 1}
+    assert get_position(%Position{index: 3, vertical: 2, horizontal: 300}, "a\nbc\rdef\r\nghig", "g")
+    == %Position{index: 15, vertical: 5, horizontal: 3}
+    assert get_position(%Position{index: 3, vertical: 2, horizontal: 3}, "a\nbc\rdef\r\nghig", "g")
+    == %Position{index: 15, vertical: 5, horizontal: 3}
   end
 
   parser "test_parser1" do

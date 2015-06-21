@@ -16,11 +16,17 @@ defmodule Parselix do
 
   def get_position(current, target, consumed) when is_integer(consumed) do
     used = String.slice target, 0, consumed
-    used_list = String.to_char_list used
-    vertical = used_list |> Enum.count fn x -> x === ?\n end
+    used_list = String.codepoints used
+    a = fn x ->
+      case x do
+        nil -> []
+        x -> x
+      end
+    end
+    vertical = (used_list |> Enum.count fn x -> x == "\n" or x == "\r" end) - length(a.(Regex.run ~r/\r\n/, used))
     get_horizontal = fn
       [head | tail], count, get_horizontal -> case head do
-        ?\n -> get_horizontal.(tail, 0, get_horizontal)
+        x when x == "\r" or x == "\n" -> get_horizontal.(tail, 0, get_horizontal)
         _ -> get_horizontal.(tail, count + 1, get_horizontal)
       end
       [], count, _ -> count
