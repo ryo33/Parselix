@@ -7,6 +7,7 @@ defmodule Parselix do
       alias Parselix.Token, as: Token
       alias Parselix.AST, as: AST
       alias Parselix.Basic, as: Basic
+      alias Parselix.Common, as: Common
     end
   end
 
