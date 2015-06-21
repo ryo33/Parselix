@@ -15,6 +15,10 @@ defmodule Parselix do
 
   defmodule Parsed, do: defstruct label: nil, content: nil, position: %Position{}
 
+  def parse(parser, target, position) do
+    parser.(target, position)
+  end
+
   def get_position(current, target, consumed) when is_integer(consumed) do
     used = String.slice target, 0, consumed
     used_list = String.codepoints used
