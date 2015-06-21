@@ -146,6 +146,12 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "clean" do
+    fn _, option, target, position ->
+      map({option, fn x -> Enum.filter x, fn x -> x != :empty end end}).(target, position)
+    end
+  end
+
   parser "flat" do
     fn _, option, target, position ->
       (flat = fn children, flat ->

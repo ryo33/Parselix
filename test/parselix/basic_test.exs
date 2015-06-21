@@ -106,6 +106,11 @@ defmodule BasicTest do
     == {:ok, 123, "456", position(3, 0, 3)}
   end
 
+  test "clean" do
+    assert [ignore(many(string("a"))), string("b"), string("c")] |> sequence |> clean |> parse("aaabcd", position)
+    == {:ok, ["b", "c"], "d", position(5, 0, 5)}
+  end
+
   test "flat" do
     assert flat(sequence([string("a"), sequence([string("b"), sequence([string("c"), string("d")])]), sequence([string("e")])])).("abcde", %Position{})
     == {:ok, ["a", "b", "c", "d", "e"], "", position(5, 0, 5)}
