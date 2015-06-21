@@ -151,7 +151,7 @@ defmodule Parselix.Basic do
       (flat = fn children, flat ->
         case children do
           [head | tail] -> flat.(head, flat) ++ flat.(tail, flat)
-          %AST{children: children} -> flat.(children, flat)
+          %Parsed{content: children} -> flat.(children, flat)
           [] -> []
           x -> [x]
         end
