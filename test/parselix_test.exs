@@ -11,20 +11,26 @@ defmodule ParselTest do
   end
 
   parser "test_parser1" do
-    fn _, _, _ ->
+    fn _, _, _, _ ->
       {:ok, "abc", "def", position(9, 1, 5)}
     end
   end
 
   parser "test_parser2" do
-    fn _, _, _ ->
+    fn _, _, _, _ ->
       {:ok, "abc", 3}
     end
   end
 
   parser "test_parser3" do
-    fn _, _, _ ->
+    fn _, _, _, _ ->
       {:ok, "abc", "def"}
+    end
+  end
+
+  parser "test_parser4" do
+    fn a, count, target, position ->
+      if count == 10, do: {:ok, "", ""}, else: a.(count + 1).(target, position)
     end
   end
 
@@ -41,6 +47,8 @@ defmodule ParselTest do
     == {:ok, %AST{label: "test_parser2", children: "abc", position: position(6, 1, 2)}, "def", position(9, 1, 5)}
     assert test_parser3_l(nil).("abcdef", position(6, 1, 2))
     == {:ok, %AST{label: "test_parser3", children: "abc", position: position(6, 1, 2)}, "def", position(9, 1, 5)}
+    assert test_parser4(0).("", position)
+    == {:ok, "", "", position}
   end
 
 end

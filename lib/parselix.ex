@@ -45,7 +45,7 @@ defmodule Parselix do
     quote do
       def unquote(parser_l_name)(option \\ nil) do
         fn target, current_position ->
-          case (unquote(block)).(option, target, current_position) do
+          case (unquote(block)).(fn x -> apply(__MODULE__, unquote(parser_l_name), [x]) end, option, target, current_position) do
             {:ok, children, remainder, position} -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, position}
             {:ok, children, remainder} when is_binary(remainder) -> {:ok, %AST{label: unquote(name), children: children, position: current_position}, remainder, get_position(current_position, target, remainder)}
             {:ok, children, consumed} when is_integer(consumed) ->
@@ -60,7 +60,7 @@ defmodule Parselix do
       end
       def unquote(parser_name)(option \\ nil) do
         fn target, current_position ->
-          case (unquote(block)).(option, target, current_position) do
+          case (unquote(block)).(fn x -> apply(__MODULE__, unquote(parser_name), [x]) end, option, target, current_position) do
             {:ok, children, remainder, position} = x -> x
             {:ok, children, remainder} when is_binary(remainder) -> {:ok, children, remainder, get_position(current_position, target, remainder)}
             {:ok, children, consumed} when is_integer(consumed) -> {:ok, children, String.slice(target, Range.new(consumed, -1)), get_position(current_position, target, consumed)}

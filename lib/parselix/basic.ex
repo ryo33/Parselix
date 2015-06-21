@@ -8,7 +8,7 @@ defmodule Parselix.Basic do
   end
 
   parser "regex" do
-    fn regex, target, _ ->
+    fn _, regex, target, _ ->
       case (Regex.run regex, target, return: :index) |> Enum.find fn {x, _} -> x == 0 end do
         {0, len} -> {:ok, String.slice(target, 0, len), String.slice(target, len, String.length(target) - len)}
         _ -> {:error, "The regex does not match."}
@@ -17,17 +17,17 @@ defmodule Parselix.Basic do
   end
 
   parser "string" do
-    fn option, target, _ ->
+    fn _, option, target, _ ->
       if String.starts_with?(target, option), do: {:ok, option, String.slice(target, Range.new(String.length(option), -1))}, else: {:error, "There is not string."}
     end
   end
 
   parser "char" do
-    fn option, target, position -> choice(String.codepoints(option) |> Enum.map fn x -> string(x) end).(target, position) end
+    fn _, option, target, position -> choice(String.codepoints(option) |> Enum.map fn x -> string(x) end).(target, position) end
   end
 
   parser "not_char" do
-    fn option, target, position ->
+    fn _, option, target, position ->
      case char(option).(target, position) do
         {:ok, _, _, _} -> {:error, "\"#{String.first target}\" appeared.", position}
         _ -> any().(target, position)
@@ -37,13 +37,13 @@ defmodule Parselix.Basic do
 
   parser "any" do
     fn
-      _, "", position -> {:error, "EOF appeared.", position}
-      _, x, _ -> {:ok, String.first(x), String.slice(x, 1, String.length(x) - 1)}
+      _, _, "", position -> {:error, "EOF appeared.", position}
+      _, _, x, _ -> {:ok, String.first(x), String.slice(x, 1, String.length(x) - 1)}
     end
   end
 
   parser "choice" do
-    fn option, target, position ->
+    fn _, option, target, position ->
       case (Enum.map(option, fn parser -> parser.(target, position) end)
       |> Enum.find fn
         {:ok, _,  _, _} -> true
@@ -55,7 +55,7 @@ defmodule Parselix.Basic do
   end
 
   parser "option" do
-    fn option, target, position ->
+    fn _, option, target, position ->
       case option.(target, position) do
         {:ok, _, _, _} = x -> x
         _ -> {:ok, :empty, target, position}
@@ -64,7 +64,7 @@ defmodule Parselix.Basic do
   end
 
   parser "sequence" do
-    fn option, target, position ->
+    fn _, option, target, position ->
       (seq = fn
         target, position, [head | tail], seq ->
           case head.(target, position) do
@@ -82,7 +82,7 @@ defmodule Parselix.Basic do
   end
 
   parser "many" do
-    fn option, target, position ->
+    fn _, option, target, position ->
       (many = fn option, target, position, many ->
         case option.(target, position) do
           {:ok, ast, remainder, position} ->
@@ -108,7 +108,7 @@ defmodule Parselix.Basic do
   end
 
   parser "times" do
-    fn option, target, current_position ->
+    fn _, option, target, current_position ->
       (times = fn {parser, time}, target, position, times, count ->
         case parser.(target, position) do
           {:ok, ast, remainder, position} ->
@@ -128,7 +128,7 @@ defmodule Parselix.Basic do
   end
 
   parser "map" do
-    fn {parser, func}, target, position ->
+    fn _, {parser, func}, target, position ->
       case parser.(target, position) do
         {:ok, result, remainder, position} -> {:ok, func.(result), remainder, position}
         x -> x
@@ -137,7 +137,7 @@ defmodule Parselix.Basic do
   end
 
   parser "flat" do
-    fn option, target, position ->
+    fn _, option, target, position ->
       (flat = fn children, flat ->
         case children do
           [head | tail] -> flat.(head, flat) ++ flat.(tail, flat)
@@ -154,7 +154,7 @@ defmodule Parselix.Basic do
   end
 
   parser "concat" do
-    fn option, target, position ->
+    fn _, option, target, position ->
       (concat = fn children, concat ->
         case children do
           [head | tail] ->
@@ -175,7 +175,7 @@ defmodule Parselix.Basic do
   end
 
   parser "wrap" do
-    fn option, target, position ->
+    fn _, option, target, position ->
       case option.(target, position) do
         {:ok, x, remainder, position} -> {:ok, [x], remainder, position}
         x -> x
@@ -184,31 +184,31 @@ defmodule Parselix.Basic do
   end
 
   parser "sequence_c" do
-    fn option, target, position ->
+    fn _, option, target, position ->
       concat(sequence(option)).(target, position)
     end
   end
 
   parser "many_c" do
-    fn option, target, position ->
+    fn _, option, target, position ->
       concat(many(option)).(target, position)
     end
   end
 
   parser "many_1" do
-    fn option, target, position ->
+    fn _, option, target, position ->
       sequence_c([wrap(option), many(option)]).(target, position)
     end
   end
 
   parser "many_1_c" do
-    fn option, target, position ->
+    fn _, option, target, position ->
       concat(sequence_c([wrap(option), many(option)])).(target, position)
     end
   end
 
   parser "dump" do
-    fn option, target, position ->
+    fn _, option, target, position ->
       case option.(target, position) do
         {:ok, _, remainder, position} -> {:ok, :empty, remainder, position}
         x -> x
@@ -217,13 +217,13 @@ defmodule Parselix.Basic do
   end
 
   parser "ignore" do
-    fn option, target, position ->
+    fn _, option, target, position ->
       dump(option(option)).(target, position)
     end
   end
 
   parser "check" do
-    fn {parser, func}, target, position ->
+    fn _, {parser, func}, target, position ->
       case parser.(target, position) do
         {:ok, result, remainder, position} ->
           if func.(result) === true, do: {:ok, result, remainder, position}, else: {:error, "#{inspect result} is a bad result."}
@@ -234,9 +234,9 @@ defmodule Parselix.Basic do
 
   parser "eof" do
     fn
-      _, "", position ->
+      _, _, "", position ->
         {:ok, :empty, "", position}
-      _, _, _ -> {:error, "There is not EOF."}
+      _, _, _, _ -> {:error, "There is not EOF."}
     end
   end
 
