@@ -10,7 +10,7 @@ defmodule Parselix.Basic do
   parser "regex" do
     fn _, regex, target, _ ->
       case (Regex.run regex, target, return: :index) |> Enum.find fn {x, _} -> x == 0 end do
-        {0, len} -> {:ok, String.slice(target, 0, len), String.slice(target, len, String.length(target) - len)}
+        {0, len} -> {:ok, String.slice(target, 0, len), len}
         _ -> {:error, "The regex does not match."}
       end
     end
@@ -18,7 +18,7 @@ defmodule Parselix.Basic do
 
   parser "string" do
     fn _, option, target, _ ->
-      if String.starts_with?(target, option), do: {:ok, option, String.slice(target, Range.new(String.length(option), -1))}, else: {:error, "There is not string."}
+      if String.starts_with?(target, option), do: {:ok, option, String.length option}, else: {:error, "There is not string."}
     end
   end
 
