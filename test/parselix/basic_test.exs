@@ -111,6 +111,11 @@ defmodule BasicTest do
     == {:ok, ["a", "b", "c", "d", "e"], "", position(5, 0, 5)}
   end
 
+  test "compress" do
+    assert compress(sequence([string("a"), sequence([string("b"), sequence([string("c"), string("d")])]), sequence([string("e")])])).("abcde", %Position{})
+    == {:ok, "abcde", "", position(5, 0, 5)}
+  end
+
   test "concat" do
     assert concat(sequence([string("a"), sequence([string("b"), sequence([string("c"), string("d")])]), sequence([string("e")])])).("abcde", %Position{})
     == {:ok, ["a", "b", ["c", "d"], "e"], "", position(5, 0, 5)}

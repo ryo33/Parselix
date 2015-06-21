@@ -163,6 +163,12 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "compress" do
+    fn _, option, target, position ->
+      map({flat(option), fn x -> (Enum.filter x, fn x -> x !== :empty end) |> Enum.join end}).(target, position)
+    end
+  end
+
   parser "concat" do
     fn _, option, target, position ->
       (concat = fn children, concat ->
