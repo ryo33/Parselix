@@ -23,7 +23,17 @@ defmodule Parselix.Basic do
   end
 
   parser "char" do
-    fn _, option, target, position -> choice(String.codepoints(option) |> Enum.map fn x -> string(x) end).(target, position) end
+    fn _, option, target, position ->
+      case any.(target, position) do
+        {:ok, char, remainder, position} ->
+          if String.contains? option, char do
+            {:ok, char, remainder, position}
+          else
+            {:error, "There is not an expected character."}
+          end
+        x -> x
+      end
+    end
   end
 
   parser "not_char" do

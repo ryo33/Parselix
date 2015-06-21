@@ -18,6 +18,10 @@ defmodule BasicTest do
   test "char" do
     assert many(char("abc")).("abccbad", position())
     == {:ok, ["a", "b", "c", "c", "b", "a"], "d", position(6, 0, 6)}
+    assert char("abc").("d", position())
+    == {:error, "There is not an expected character.", position}
+    assert char("abc").("", position())
+    == {:error, "EOF appeared.", position}
   end
 
   test "not_char" do
