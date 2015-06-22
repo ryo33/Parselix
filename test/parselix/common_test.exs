@@ -26,8 +26,8 @@ defmodule CommonTest do
     == {:ok, ["A", "B", "C", "a", "b", "c"], " ", position(6, 0, 6)}
   end
 
-  test "numbers" do
-    assert numbers().("123a", position)
+  test "digits" do
+    assert digits().("123a", position)
     == {:ok, ["1", "2", "3"], "a", position(3, 0, 3)}
   end
 

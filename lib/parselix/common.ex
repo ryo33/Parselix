@@ -36,11 +36,11 @@ defmodule Parselix.Common do
   end
   parser "letters", do: fn _, _, target, position -> many_1(letter).(target, position) end
 
-  parser "number" do
+  parser "digit" do
     fn _, _, target, position ->
       char("0123456789").(target, position)
     end
   end
-  parser "numbers", do: fn _, _, target, position -> many_1(number).(target, position) end
+  parser "digits", do: fn _, _, target, position -> many_1(digit).(target, position) end
 
 end
