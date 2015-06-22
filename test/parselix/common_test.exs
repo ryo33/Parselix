@@ -31,4 +31,14 @@ defmodule CommonTest do
     == {:ok, ["1", "2", "3"], "a", position(3, 0, 3)}
   end
 
+  test "hex_digits" do
+    assert hex_digits().("123a ", position)
+    == {:ok, ["1", "2", "3", "a"], " ", position(4, 0, 4)}
+  end
+
+  test "oct_digits" do
+    assert oct_digits().("1738", position)
+    == {:ok, ["1", "7", "3"], "8", position(3, 0, 3)}
+  end
+
 end

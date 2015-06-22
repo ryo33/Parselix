@@ -43,4 +43,18 @@ defmodule Parselix.Common do
   end
   parser "digits", do: fn _, _, target, position -> many_1(digit).(target, position) end
 
+  parser "hex_digit" do
+    fn _, _, target, position ->
+      char("0123456789abcdefABCDEF").(target, position)
+    end
+  end
+  parser "hex_digits", do: fn _, _, target, position -> many_1(hex_digit).(target, position) end
+
+  parser "oct_digit" do
+    fn _, _, target, position ->
+      char("01234567").(target, position)
+    end
+  end
+  parser "oct_digits", do: fn _, _, target, position -> many_1(oct_digit).(target, position) end
+
 end
