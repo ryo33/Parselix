@@ -133,6 +133,16 @@ defmodule BasicTest do
     == {:ok, ["a"], "bc", position(1, 0, 1)}
   end
 
+  test "unwrap" do
+    assert unwrap(wrap(string("a"))).("abc", position(0, 0, 0))
+    == {:ok, "a", "bc", position(1, 0, 1)}
+  end
+
+  test "unwrap_r" do
+    assert unwrap_r(wrap(wrap(wrap(wrap(string("a")))))).("abc", position(0, 0, 0))
+    == {:ok, "a", "bc", position(1, 0, 1)}
+  end
+
   test "sequence_c" do
     assert sequence_c([string("a"), sequence([string("b"), sequence([string("c"), string("d")])]), sequence([string("e")])]).("abcde", %Position{})
     == {:ok, ["a", "b", ["c", "d"], "e"], "", position(5, 0, 5)}

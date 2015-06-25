@@ -205,6 +205,28 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "unwrap" do
+    fn _, option, target, position ->
+      case option.(target, position) do
+        {:ok, [x], remainder, position} -> {:ok, x, remainder, position}
+        x -> x
+      end
+    end
+  end
+
+  parser "unwrap_r" do
+    fn _, option, target, position ->
+      (unwrap = fn
+        [x], unwrap -> unwrap.(x, unwrap)
+        x, unwrap -> x
+      end
+      case option.(target, position) do
+        {:ok, x, remainder, position} -> {:ok, unwrap.(x, unwrap), remainder, position}
+        x -> x
+      end)
+    end
+  end
+
   parser "sequence_c" do
     fn _, option, target, position ->
       concat(sequence(option)).(target, position)
