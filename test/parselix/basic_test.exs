@@ -138,14 +138,19 @@ defmodule BasicTest do
     == {:ok, "a", "bc", position(1, 0, 1)}
   end
 
+  test "unwrap_r" do
+    assert unwrap_r(wrap(wrap(wrap(wrap(string("a")))))).("abc", position(0, 0, 0))
+    == {:ok, "a", "bc", position(1, 0, 1)}
+  end
+
   test "pick" do
     assert many(any) |> (&(pick({&1, &2}))).(1) |> parse("abc", position)
     == {:ok, "b", "", position(3, 0, 3)}
   end
 
-  test "unwrap_r" do
-    assert unwrap_r(wrap(wrap(wrap(wrap(string("a")))))).("abc", position(0, 0, 0))
-    == {:ok, "a", "bc", position(1, 0, 1)}
+  test "slice" do
+    assert many(any) |> (&(slice({&1, &2}))).(2..4) |> parse("abcdefghij", position)
+    == {:ok, ["c", "d", "e"], "", position(10, 0, 10)}
   end
 
   test "sequence_c" do

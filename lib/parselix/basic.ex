@@ -236,6 +236,20 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "slice" do
+    fn _, {parser, f..l}, target, position ->
+      case parser.(target, position) do
+        {:ok, x, remainder, position} -> {:ok, Enum.slice(x, f..l), remainder, position}
+        x -> x
+      end
+      _, {parser, start, count}, target, position ->
+      case parser.(target, position) do
+        {:ok, x, remainder, position} -> {:ok, Enum.slice(x, start, count), remainder, position}
+        x -> x
+      end
+    end
+  end
+
   parser "sequence_c" do
     fn _, option, target, position ->
       concat(sequence(option)).(target, position)
