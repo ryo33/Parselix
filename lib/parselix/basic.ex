@@ -79,6 +79,12 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "replace" do
+    fn _, {parser, replacement}, target, position ->
+      parser |> (&(map({&1, &2}))).(fn _ -> replacement end) |> parse(target, position)
+    end
+  end
+
   parser "sequence" do
     fn _, option, target, position ->
       (seq = fn

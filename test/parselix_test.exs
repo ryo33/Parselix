@@ -2,11 +2,10 @@ defmodule ParselTest do
   use ExUnit.Case
   use Parselix
 
-  test "get_position" do
-    assert get_position(%Position{index: 3, vertical: 2, horizontal: 300}, "a\nbc\rdef\r\nghig", "g")
-    == %Position{index: 15, vertical: 5, horizontal: 3}
-    assert get_position(%Position{index: 3, vertical: 2, horizontal: 3}, "a\nbc\rdef\r\nghig", "g")
-    == %Position{index: 15, vertical: 5, horizontal: 3}
+  parser "test_parser0" do
+    fn _, _, _, _ ->
+      {:ok, "abc", "def"}
+    end
   end
 
   parser "test_parser1" do
@@ -25,6 +24,25 @@ defmodule ParselTest do
     fn _, _, _, _ ->
       {:ok, "abc", "def"}
     end
+  end
+
+  test "position" do
+    assert position(1, 2, 3)
+    == %Position{index: 1, vertical: 2, horizontal: 3}
+  end
+
+  test "parse" do
+    assert test_parser0(nil) |> parse("abcdef", position(1, 1, 1))
+    == {:ok, "abc", "def", position(4, 1, 4)}
+    assert test_parser0(nil) |> parse("abcdef")
+    == {:ok, "abc", "def", position(3, 0, 3)}
+  end
+
+  test "get_position" do
+    assert get_position(%Position{index: 3, vertical: 2, horizontal: 300}, "a\nbc\rdef\r\nghig", "g")
+    == %Position{index: 15, vertical: 5, horizontal: 3}
+    assert get_position(%Position{index: 3, vertical: 2, horizontal: 3}, "a\nbc\rdef\r\nghig", "g")
+    == %Position{index: 15, vertical: 5, horizontal: 3}
   end
 
   parser "test_parser4" do

@@ -15,7 +15,9 @@ defmodule Parselix do
 
   defmodule Parsed, do: defstruct label: nil, content: nil, position: %Position{}
 
-  def parse(parser, target, position) do
+  defmacro position(index \\ 0, vertical \\ 0, horizontal \\ 0), do: quote do: %Position{index: unquote(index), vertical: unquote(vertical), horizontal: unquote(horizontal)}
+
+  def parse(parser, target, position \\ position) do
     parser.(target, position)
   end
 
@@ -47,8 +49,6 @@ defmodule Parselix do
   def get_position(current, target, remainder) when is_binary(remainder) do
     get_position current, target, String.length(target) - String.length(remainder)
   end
-
-  defmacro position(index \\ 0, vertical \\ 0, horizontal \\ 0), do: quote do: %Position{index: unquote(index), vertical: unquote(vertical), horizontal: unquote(horizontal)}
 
   defmacro parser(name, do: block) do
     parser_name = String.to_atom(name)

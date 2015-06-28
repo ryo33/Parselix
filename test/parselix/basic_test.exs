@@ -59,6 +59,13 @@ defmodule BasicTest do
     == {:ok, "default", "abcdef", %Position{index: 100}}
   end
 
+  test "replace" do
+    assert replace({string("abc"), "replacement"}).("abcdef", %Position{})
+    == {:ok, "replacement", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
+    assert replace({string("bc"), "replacement"}).("abcdef", %Position{index: 100})
+    == {:error, "There is not string.", position(100, 0, 0)}
+  end
+
   test "sequence" do
     assert sequence([string_l("abc"), string_l("def"), string_l("ghi")]).("abcdefghijkl", %Position{})
     == {:ok,
