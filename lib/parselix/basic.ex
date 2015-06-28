@@ -218,12 +218,21 @@ defmodule Parselix.Basic do
     fn _, option, target, position ->
       (unwrap = fn
         [x], unwrap -> unwrap.(x, unwrap)
-        x, unwrap -> x
+        x, _ -> x
       end
       case option.(target, position) do
         {:ok, x, remainder, position} -> {:ok, unwrap.(x, unwrap), remainder, position}
         x -> x
       end)
+    end
+  end
+
+  parser "pick" do
+    fn _, {parser, index}, target, position ->
+      case parser.(target, position) do
+        {:ok, x, remainder, position} -> {:ok, Enum.at(x, index), remainder, position}
+        x -> x
+      end
     end
   end
 
