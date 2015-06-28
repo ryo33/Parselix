@@ -121,7 +121,9 @@ defmodule Parselix.Prepared.JSON do
 
   parser "exp" do
     fn _, _, target, position ->
-      [char("eE"), option(char("+-")), many_1(char("123456789"))] |> sequence |> parse(target, position)
+      [char("eE"), option(char("+-")), int]
+      |> sequence
+      |> parse(target, position)
     end
   end
 
