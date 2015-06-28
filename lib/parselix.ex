@@ -8,6 +8,7 @@ defmodule Parselix do
       alias Parselix.Parsed, as: Parsed
       alias Parselix.Basic, as: Basic
       alias Parselix.Common, as: Common
+      alias Parselix.Prepared, as: Prepared
     end
   end
 
