@@ -52,6 +52,13 @@ defmodule BasicTest do
     == {:ok, :empty, "abcdef", %Position{index: 100}}
   end
 
+  test "default" do
+    assert default({string("abc"), "default"}).("abcdef", %Position{})
+    == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
+    assert default({string("bc"), "default"}).("abcdef", %Position{index: 100})
+    == {:ok, "default", "abcdef", %Position{index: 100}}
+  end
+
   test "sequence" do
     assert sequence([string_l("abc"), string_l("def"), string_l("ghi")]).("abcdefghijkl", %Position{})
     == {:ok,

@@ -73,6 +73,12 @@ defmodule Parselix.Basic do
     end
   end
 
+  parser "default" do
+    fn _, {parser, default}, target, position ->
+      parser |> option |> (&(map({&1, &2}))).(fn x -> if x == :empty, do: default, else: x end) |> parse(target, position)
+    end
+  end
+
   parser "sequence" do
     fn _, option, target, position ->
       (seq = fn
