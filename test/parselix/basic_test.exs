@@ -70,9 +70,9 @@ defmodule BasicTest do
     assert sequence([string_l("abc"), string_l("def"), string_l("ghi")]).("abcdefghijkl", %Position{})
     == {:ok,
         [
-          %Parsed{label: "string", content: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
-          %Parsed{label: "string", content: "def", position: %Position{index: 3, vertical: 0, horizontal: 3}},
-          %Parsed{label: "string", content: "ghi", position: %Position{index: 6, vertical: 0, horizontal: 6}}
+          %Meta{label: "string", content: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
+          %Meta{label: "string", content: "def", position: %Position{index: 3, vertical: 0, horizontal: 3}},
+          %Meta{label: "string", content: "ghi", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "jkl", %Position{index: 9, vertical: 0, horizontal: 9}}
     assert sequence([string("abc"), string("ddf"), string("ghi")]).("abcdefghijkl", %Position{})
     == {:error, "There is not string.", %Parselix.Position{horizontal: 3, index: 3, vertical: 0}}
@@ -82,9 +82,9 @@ defmodule BasicTest do
     assert many(string_l("abc")).("abcabcabcdef", %Position{})
     == {:ok,
         [
-          %Parsed{label: "string", content: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
-          %Parsed{label: "string", content: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
-          %Parsed{label: "string", content: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
+          %Meta{label: "string", content: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
+          %Meta{label: "string", content: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
+          %Meta{label: "string", content: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "def", %Position{index: 9, vertical: 0, horizontal: 9}}
     assert many(string("abc")).("aabcabcabcdef", position)
     == {:ok, [], "aabcabcabcdef", %Position{index: 0, vertical: 0, horizontal: 0}}
@@ -181,9 +181,9 @@ defmodule BasicTest do
     assert many_1(string_l("abc")).("abcabcabcdef", %Position{})
     == {:ok,
         [
-          %Parsed{label: "string", content: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
-          %Parsed{label: "string", content: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
-          %Parsed{label: "string", content: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
+          %Meta{label: "string", content: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
+          %Meta{label: "string", content: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
+          %Meta{label: "string", content: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "def", %Position{index: 9, vertical: 0, horizontal: 9}}
     assert many_1(string("abc")).("aabcabcabcdef", %Position{})
     == {:error, "There is not string.", %Position{index: 0, vertical: 0, horizontal: 0}}

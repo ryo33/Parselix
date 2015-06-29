@@ -59,11 +59,11 @@ defmodule ParselTest do
     assert test_parser3(nil).("abcdef", position(6, 1, 2))
     == {:ok, "abc", "def", position(9, 1, 5)}
     assert test_parser1_l(nil).("abcdef", position(6, 1, 2))
-    == {:ok, %Parsed{label: "test_parser1", content: "abc", position: position(6, 1, 2)}, "def", position(9, 1, 5)}
+    == {:ok, %Meta{label: "test_parser1", content: "abc", position: position(6, 1, 2)}, "def", position(9, 1, 5)}
     assert test_parser2_l(nil).("abcdef", position(6, 1, 2))
-    == {:ok, %Parsed{label: "test_parser2", content: "abc", position: position(6, 1, 2)}, "def", position(9, 1, 5)}
+    == {:ok, %Meta{label: "test_parser2", content: "abc", position: position(6, 1, 2)}, "def", position(9, 1, 5)}
     assert test_parser3_l(nil).("abcdef", position(6, 1, 2))
-    == {:ok, %Parsed{label: "test_parser3", content: "abc", position: position(6, 1, 2)}, "def", position(9, 1, 5)}
+    == {:ok, %Meta{label: "test_parser3", content: "abc", position: position(6, 1, 2)}, "def", position(9, 1, 5)}
     assert test_parser4(0).("", position)
     == {:ok, "", "", position}
   end
