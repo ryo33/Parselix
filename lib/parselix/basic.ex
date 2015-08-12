@@ -48,7 +48,7 @@ defmodule Parselix.Basic do
   parser "any" do
     fn
       _, _, "", position -> {:error, "EOF appeared.", position}
-      _, _, x, _ -> {:ok, String.first(x), String.slice(x, 1, String.length(x) - 1)}
+      _, _, x, _ -> {:ok, String.first(x), 1}
     end
   end
 
