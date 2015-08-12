@@ -4,6 +4,13 @@ defmodule Parselix.Prepared.JSON do
   use Common
   use Prepared
 
+  @moduledoc """
+  Provide a json parser.
+
+  ##Example
+      json |> parse(JSON)
+  """
+
   defmacro __using__(_opts) do
     quote do
       import JSON
