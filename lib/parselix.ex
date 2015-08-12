@@ -55,21 +55,6 @@ defmodule Parselix do
     parser_name = String.to_atom(name)
     parser_l_name = String.to_atom(name <> "_l")
     quote do
-      def unquote(parser_l_name)(option \\ nil) do
-        fn target, current_position ->
-          case (unquote(block)).(fn x -> apply(__MODULE__, unquote(parser_l_name), [x]) end, option, target, current_position) do
-            {:ok, children, remainder, position} -> {:ok, %Meta{label: unquote(name), content: children, position: current_position}, remainder, position}
-            {:ok, children, remainder} when is_binary(remainder) -> {:ok, %Meta{label: unquote(name), content: children, position: current_position}, remainder, get_position(current_position, target, remainder)}
-            {:ok, children, consumed} when is_integer(consumed) ->
-              {:ok,
-                %Meta{label: unquote(name), content: children, position: current_position
-                }, String.slice(target, Range.new(consumed, -1)), get_position(current_position, target, consumed)}
-            {:error, message, position} -> {:error, "[" <> unquote(name) <> "] " <> message, position}
-            {:error, message} -> {:error, "[" <> unquote(name) <> "] " <> message, current_position}
-            x -> {:error, "\"" <> unquote(name) <> "\" returns a misformed result.\n#{inspect x}", current_position}
-          end
-        end
-      end
       def unquote(parser_name)(option \\ nil) do
         fn target, current_position ->
           case (unquote(block)).(fn x -> apply(__MODULE__, unquote(parser_name), [x]) end, option, target, current_position) do
@@ -79,6 +64,14 @@ defmodule Parselix do
             {:error, message, position} = x -> x
             {:error, message} -> {:error, message, current_position}
             x -> {:error, "\"" <> unquote(name) <> "\" returns a misformed result.\n#{inspect x}", current_position}
+          end
+        end
+      end
+      def unquote(parser_l_name)(option \\ nil) do
+        fn target, current_position ->
+          case apply(__MODULE__, unquote(parser_name), [option]).(target, current_position) do
+            {:ok, result, remainder, position} -> {:ok, %Meta{label: unquote(name), content: result, position: current_position}, remainder, position}
+            x -> x
           end
         end
       end
