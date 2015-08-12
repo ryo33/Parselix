@@ -3,6 +3,8 @@ defmodule Parselix.Mixfile do
 
   def project do
     [app: :parselix,
+     name: "Parselix",
+     source_url: "https://github.com/ryo33/Parselix",
      version: "0.0.1",
      elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
@@ -27,6 +29,7 @@ defmodule Parselix.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    []
+    [{:earmark, "~> 0.1.17", only: :dev},
+     {:ex_doc, "~> 0.8.1", only: :dev}]
   end
 end
