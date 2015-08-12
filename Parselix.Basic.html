@@ -99,6 +99,11 @@
       </ul>
 
       
+        <section id="moduledoc" class="docstring">
+          <p>Provide basic parsers.</p>
+
+        </section>
+      
 
       
         <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L1" class="view_source">Source</a>
@@ -110,7 +115,8 @@
           <table class="summary">
             <tr>
   <td class="summary_signature"><a href="#any/1">any(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Parse any character</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#any_l/1">any_l(option \\ nil)</a></td>
@@ -119,7 +125,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#char/1">char(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Parse a specified character</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#char_l/1">char_l(option \\ nil)</a></td>
@@ -128,7 +135,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#check/1">check(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Validate the parser result</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#check_l/1">check_l(option \\ nil)</a></td>
@@ -137,7 +145,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#choice/1">choice(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Return a result of parser which succeeds first</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#choice_l/1">choice_l(option \\ nil)</a></td>
@@ -146,7 +155,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#clean/1">clean(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Remove :empty from the parser result</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#clean_l/1">clean_l(option \\ nil)</a></td>
@@ -155,7 +165,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#compress/1">compress(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Compress the parser result to a string</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#compress_l/1">compress_l(option \\ nil)</a></td>
@@ -164,7 +175,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#concat/1">concat(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Flatten the parser result once</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#concat_l/1">concat_l(option \\ nil)</a></td>
@@ -173,7 +185,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#default/1">default(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Return a default value when parser failed</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#default_l/1">default_l(option \\ nil)</a></td>
@@ -182,7 +195,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#dump/1">dump(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Dump the parser result</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#dump_l/1">dump_l(option \\ nil)</a></td>
@@ -191,7 +205,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#eof/1">eof(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Parse the end of text</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#eof_l/1">eof_l(option \\ nil)</a></td>
@@ -200,7 +215,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#flat/1">flat(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Flatten the parser result</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#flat_l/1">flat_l(option \\ nil)</a></td>
@@ -209,7 +225,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#ignore/1">ignore(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Ignore the parser result</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#ignore_l/1">ignore_l(option \\ nil)</a></td>
@@ -218,15 +235,18 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#many/1">many(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Parse 0 or more times</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#many_1/1">many_1(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Parse 1 or more times</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#many_1_c/1">many_1_c(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Optimized implementation of concat(many_1(parser))</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#many_1_c_l/1">many_1_c_l(option \\ nil)</a></td>
@@ -240,7 +260,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#many_c/1">many_c(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Optimized implementation of concat(many(parser))</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#many_c_l/1">many_c_l(option \\ nil)</a></td>
@@ -254,7 +275,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#map/1">map(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Map the parser result</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#map_l/1">map_l(option \\ nil)</a></td>
@@ -263,7 +285,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#not_char/1">not_char(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Parse a not specified character</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#not_char_l/1">not_char_l(option \\ nil)</a></td>
@@ -272,7 +295,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#option/1">option(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Parse 0 times or once</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#option_l/1">option_l(option \\ nil)</a></td>
@@ -281,7 +305,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#pick/1">pick(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Pick one value from the parser result</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#pick_l/1">pick_l(option \\ nil)</a></td>
@@ -290,7 +315,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#regex/1">regex(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Parse a string which matches regex</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#regex_l/1">regex_l(option \\ nil)</a></td>
@@ -299,7 +325,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#replace/1">replace(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Replace and Return the result of parser</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#replace_l/1">replace_l(option \\ nil)</a></td>
@@ -308,11 +335,13 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#sequence/1">sequence(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Parse in sequence</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#sequence_c/1">sequence_c(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Optimized implementation of concat(sequence(parser))</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#sequence_c_l/1">sequence_c_l(option \\ nil)</a></td>
@@ -326,7 +355,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#slice/1">slice(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Slice the parser result</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#slice_l/1">slice_l(option \\ nil)</a></td>
@@ -335,7 +365,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#string/1">string(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Parse a specified string</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#string_l/1">string_l(option \\ nil)</a></td>
@@ -344,7 +375,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#times/1">times(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Parse X times</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#times_l/1">times_l(option \\ nil)</a></td>
@@ -353,7 +385,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#unwrap/1">unwrap(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Put the value out of the parser result</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#unwrap_l/1">unwrap_l(option \\ nil)</a></td>
@@ -362,7 +395,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#unwrap_r/1">unwrap_r(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Put the value out of the parser result recursively</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#unwrap_r_l/1">unwrap_r_l(option \\ nil)</a></td>
@@ -371,7 +405,8 @@
 </tr>
 <tr>
   <td class="summary_signature"><a href="#wrap/1">wrap(option \\ nil)</a></td>
-  <td class="summary_synopsis"></td>
+  <td class="summary_synopsis"><p>Put the parser result into an empty array</p>
+</td>
 </tr>
 <tr>
   <td class="summary_signature"><a href="#wrap_l/1">wrap_l(option \\ nil)</a></td>
@@ -399,10 +434,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Parse any character.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L48" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L57" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -420,7 +456,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L48" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L57" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -434,10 +470,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Parse a specified character.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L25" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L32" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -455,7 +492,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L25" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L32" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -469,10 +506,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Validate the parser result.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L304" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L337" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -490,7 +528,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L304" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L337" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -504,10 +542,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Return a result of parser which succeeds first.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L55" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L65" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -525,7 +564,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L55" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L65" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -539,10 +578,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Remove :empty from the parser result.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L161" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L179" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -560,7 +600,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L161" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L179" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -574,10 +614,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Compress the parser result to a string.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L184" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L204" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -595,7 +636,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L184" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L204" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -609,10 +650,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Flatten the parser result once.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L190" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L211" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -630,7 +672,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L190" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L211" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -644,10 +686,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Return a default value when parser failed.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L76" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L88" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -665,7 +708,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L76" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L88" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -679,10 +722,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Dump the parser result.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L289" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L320" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -700,7 +744,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L289" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L320" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -714,10 +758,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Parse the end of text.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L314" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L348" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -735,7 +780,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L314" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L348" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -749,10 +794,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Flatten the parser result.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L167" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L186" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -770,7 +816,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L167" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L186" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -784,10 +830,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Ignore the parser result.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L298" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L330" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -805,7 +852,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L298" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L330" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -819,10 +866,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Parse 0 or more times.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L106" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L121" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -836,10 +884,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Parse 1 or more times.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L277" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L306" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -853,10 +902,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Optimized implementation of concat(many_1(parser)).</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L283" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L313" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -874,7 +924,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L283" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L313" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -892,7 +942,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L277" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L306" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -906,10 +956,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Optimized implementation of concat(many(parser)).</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L271" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L299" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -927,7 +978,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L271" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L299" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -945,7 +996,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L106" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L121" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -959,10 +1010,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Map the parser result.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L152" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L169" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -980,7 +1032,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L152" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L169" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -994,10 +1046,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Parse a not specified character.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L39" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L47" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1015,7 +1068,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L39" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L47" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1029,10 +1082,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Parse 0 times or once.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L67" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L78" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1050,7 +1104,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L67" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L78" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1064,10 +1118,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Pick one value from the parser result.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L242" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L267" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1085,7 +1140,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L242" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L267" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1099,10 +1154,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Parse a string which matches regex.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L10" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L15" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1120,7 +1176,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L10" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L15" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1134,10 +1190,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Replace and Return the result of parser.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L82" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L95" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1155,7 +1212,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L82" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L95" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1169,10 +1226,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Parse in sequence.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L88" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L102" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1186,10 +1244,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Optimized implementation of concat(sequence(parser)).</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L265" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L292" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1207,7 +1266,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L265" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L292" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1225,7 +1284,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L88" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L102" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1239,10 +1298,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Slice the parser result.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L251" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L277" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1260,7 +1320,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L251" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L277" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1274,10 +1334,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Parse a specified string.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L19" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L25" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1295,7 +1356,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L19" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L25" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1309,10 +1370,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Parse X times.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L132" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L148" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1330,7 +1392,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L132" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L148" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1344,10 +1406,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Put the value out of the parser result.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L220" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L243" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1365,7 +1428,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L220" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L243" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1379,10 +1442,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Put the value out of the parser result recursively.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L229" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L253" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1400,7 +1464,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L229" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L253" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1414,10 +1478,11 @@
   </div>
   
   <section class="docstring">
-    
+    <p>Put the parser result into an empty array.</p>
+
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L211" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L233" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -1435,7 +1500,7 @@
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L211" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/basic.ex#L233" class="view_source">Source</a>
   
 </section>
 

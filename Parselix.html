@@ -147,7 +147,7 @@
     <a href="#t:ok/0">ok</a> :: {:ok, any, <a href="http://elixir-lang.org/docs/stable/elixir/String.html#t:t/0">String.t</a>, %Parselix.Position{horizontal: term, index: term, vertical: term}}
   </p>
   
-      <div class="typespec_doc"><p>A successful result of product parser.</p>
+      <div class="typespec_doc"><p>A successful result of product parser. {:ok, RESULT, REMAINDER, NEW_POSITION}</p>
 </div>
   
 </div>
@@ -156,7 +156,7 @@
     <a href="#t:error/0">error</a> :: {:error, <a href="http://elixir-lang.org/docs/stable/elixir/String.html#t:t/0">String.t</a>, %Parselix.Position{horizontal: term, index: term, vertical: term}}
   </p>
   
-      <div class="typespec_doc"><p>A failed result of product parser.</p>
+      <div class="typespec_doc"><p>A failed result of product parser. {:error, ERROR_MESSAGE, POSITION}</p>
 </div>
   
 </div>
@@ -165,7 +165,7 @@
     <a href="#t:ok_1/0">ok_1</a> :: {:ok, any, integer}
   </p>
   
-      <div class="typespec_doc"><p>A successful result of source parser.</p>
+      <div class="typespec_doc"><p>A successful result of source parser. {:ok, RESULT, LENGTH_OF_CONSUMED_STRING}</p>
 </div>
   
 </div>
@@ -174,7 +174,7 @@
     <a href="#t:ok_2/0">ok_2</a> :: {:ok, any, <a href="http://elixir-lang.org/docs/stable/elixir/String.html#t:t/0">String.t</a>}
   </p>
   
-      <div class="typespec_doc"><p>A successful result of source parser.</p>
+      <div class="typespec_doc"><p>A successful result of source parser. {:ok, RESULT, REMAINDER}</p>
 </div>
   
 </div>
@@ -183,7 +183,7 @@
     <a href="#t:error_1/0">error_1</a> :: {:error, <a href="http://elixir-lang.org/docs/stable/elixir/String.html#t:t/0">String.t</a>}
   </p>
   
-      <div class="typespec_doc"><p>A failed result of source parser.</p>
+      <div class="typespec_doc"><p>A failed result of source parser. {:error, ERROR_MESSAGE}</p>
 </div>
   
 </div>
@@ -202,6 +202,7 @@
   </p>
   
       <div class="typespec_doc"><p>A parser passed to parser/2.</p>
+<p>Parameters 1. Its own parser. 2. The option which is passed to your parser. 3. Target string. 4. Current position.</p>
 </div>
   
 </div>
@@ -226,7 +227,7 @@
     
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix.ex#L43" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix.ex#L66" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -243,7 +244,7 @@
     
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix.ex#L39" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix.ex#L62" class="view_source">Source</a>
   
 </section>
 
@@ -272,13 +273,7 @@
   
   <section class="docstring">
     <p>Macro for creating a parser.</p>
-<ol style="list-style-type: decimal">
-<li>Its own parser.</li>
-<li>The option which is passed to your parser.</li>
-<li>Target string.</li>
-<li>Current position.</li>
-</ol>
-<p>Result format which you can return in the function. * {:ok, RESULT, LENGTH_OF_CONSUMED_STRING} * {:ok, RESULT, REMAINDER} * {:ok, RESULT, REMAINDER, NEW_POSITION} * {:error, ERROR_MESSAGE} * {:error, ERROR_MESSAGE, POSITION}</p>
+<p>Result format which you can return in the function.</p>
 <h2 id="example">Example</h2>
 <pre><code class="elixir">parser &quot;any&quot; do
   fn
@@ -289,7 +284,7 @@ end</code></pre>
 
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix.ex#L98" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix.ex#L111" class="view_source">Source</a>
   
 </section>
 <section class="detail">
@@ -306,7 +301,7 @@ end</code></pre>
     
   </section>
   
-    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix.ex#L37" class="view_source">Source</a>
+    <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix.ex#L60" class="view_source">Source</a>
   
 </section>
 
