@@ -12,7 +12,7 @@ defmodule Parselix.Mixfile do
        licenses: ["MIT"],
        links: %{
          "GitHub" => "https://github.com/ma2gedev/hex_sample",
-         "Document" => "https://ryo33.github.io/Parselix"
+         "Document" => "http://hexdocs.pm/parselix/0.1.0/"
        }
      ],
      elixir: "~> 1.0",
