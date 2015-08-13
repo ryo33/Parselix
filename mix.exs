@@ -5,7 +5,16 @@ defmodule Parselix.Mixfile do
     [app: :parselix,
      name: "Parselix",
      source_url: "https://github.com/ryo33/Parselix",
-     version: "0.0.1",
+     version: "0.1.0",
+     description: "A Parser Combinator Library",
+     package: [
+       contributors: ["ryo33"],
+       licenses: ["MIT"],
+       links: %{
+         "GitHub" => "https://github.com/ma2gedev/hex_sample",
+         "Document" => "https://ryo33.github.io/Parselix"
+       }
+     ],
      elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
