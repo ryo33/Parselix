@@ -104,7 +104,7 @@
 
       
         <section id="moduledoc" class="docstring">
-          <p>Provides a macro for creating parser mainly.</p>
+          <p>Provides the macro for creating parser and some helper functions.</p>
 
         </section>
       
@@ -147,7 +147,8 @@
     <a href="#t:ok/0">ok</a> :: {:ok, any, <a href="http://elixir-lang.org/docs/stable/elixir/String.html#t:t/0">String.t</a>, %Parselix.Position{horizontal: term, index: term, vertical: term}}
   </p>
   
-      <div class="typespec_doc"><p>A successful result of product parser. {:ok, RESULT, REMAINDER, NEW_POSITION}</p>
+      <div class="typespec_doc"><p>A successful result of product parser.<br />
+{:ok, RESULT, REMAINDER, NEW_POSITION}</p>
 </div>
   
 </div>
@@ -202,7 +203,13 @@
   </p>
   
       <div class="typespec_doc"><p>A parser passed to parser/2.</p>
-<p>Parameters 1. Its own parser. 2. The option which is passed to your parser. 3. Target string. 4. Current position.</p>
+<h2 id="parameters">Parameters</h2>
+<ol style="list-style-type: decimal">
+<li>Its own parser.</li>
+<li>The option which is passed to your parser.</li>
+<li>Target string.</li>
+<li>Current position.</li>
+</ol>
 </div>
   
 </div>
