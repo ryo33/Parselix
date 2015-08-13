@@ -1,6 +1,6 @@
 defmodule Parselix do
   @moduledoc """
-  Provides a macro for creating parser mainly.
+  Provides the macro for creating parser and some helper functions.
   """
 
   defmacro __using__(_opts) do
@@ -49,7 +49,7 @@ defmodule Parselix do
   @typedoc """
   A parser passed to parser/2.
 
-  Parameters
+  ##Parameters
   1. Its own parser.
   2. The option which is passed to your parser.
   3. Target string.
