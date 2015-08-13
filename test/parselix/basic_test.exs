@@ -18,6 +18,10 @@ defmodule BasicTest do
   test "char" do
     assert many(char("abc")).("abccbad", position())
     == {:ok, ["a", "b", "c", "c", "b", "a"], "d", position(6, 0, 6)}
+    assert char("abc").("d", position())
+    == {:error, "There is not an expected character.", position}
+    assert char("abc").("", position())
+    == {:error, "EOF appeared.", position}
   end
 
   test "not_char" do
@@ -48,13 +52,27 @@ defmodule BasicTest do
     == {:ok, :empty, "abcdef", %Position{index: 100}}
   end
 
+  test "default" do
+    assert default({string("abc"), "default"}).("abcdef", %Position{})
+    == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
+    assert default({string("bc"), "default"}).("abcdef", %Position{index: 100})
+    == {:ok, "default", "abcdef", %Position{index: 100}}
+  end
+
+  test "replace" do
+    assert replace({string("abc"), "replacement"}).("abcdef", %Position{})
+    == {:ok, "replacement", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
+    assert replace({string("bc"), "replacement"}).("abcdef", %Position{index: 100})
+    == {:error, "There is not string.", position(100, 0, 0)}
+  end
+
   test "sequence" do
     assert sequence([string_l("abc"), string_l("def"), string_l("ghi")]).("abcdefghijkl", %Position{})
     == {:ok,
         [
-          %AST{label: "string", children: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
-          %AST{label: "string", children: "def", position: %Position{index: 3, vertical: 0, horizontal: 3}},
-          %AST{label: "string", children: "ghi", position: %Position{index: 6, vertical: 0, horizontal: 6}}
+          %Meta{label: "string", content: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
+          %Meta{label: "string", content: "def", position: %Position{index: 3, vertical: 0, horizontal: 3}},
+          %Meta{label: "string", content: "ghi", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "jkl", %Position{index: 9, vertical: 0, horizontal: 9}}
     assert sequence([string("abc"), string("ddf"), string("ghi")]).("abcdefghijkl", %Position{})
     == {:error, "There is not string.", %Parselix.Position{horizontal: 3, index: 3, vertical: 0}}
@@ -64,9 +82,9 @@ defmodule BasicTest do
     assert many(string_l("abc")).("abcabcabcdef", %Position{})
     == {:ok,
         [
-          %AST{label: "string", children: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
-          %AST{label: "string", children: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
-          %AST{label: "string", children: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
+          %Meta{label: "string", content: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
+          %Meta{label: "string", content: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
+          %Meta{label: "string", content: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "def", %Position{index: 9, vertical: 0, horizontal: 9}}
     assert many(string("abc")).("aabcabcabcdef", position)
     == {:ok, [], "aabcabcabcdef", %Position{index: 0, vertical: 0, horizontal: 0}}
@@ -102,9 +120,19 @@ defmodule BasicTest do
     == {:ok, 123, "456", position(3, 0, 3)}
   end
 
+  test "clean" do
+    assert [ignore(many(string("a"))), string("b"), string("c")] |> sequence |> clean |> parse("aaabcd", position)
+    == {:ok, ["b", "c"], "d", position(5, 0, 5)}
+  end
+
   test "flat" do
     assert flat(sequence([string("a"), sequence([string("b"), sequence([string("c"), string("d")])]), sequence([string("e")])])).("abcde", %Position{})
     == {:ok, ["a", "b", "c", "d", "e"], "", position(5, 0, 5)}
+  end
+
+  test "compress" do
+    assert compress(sequence([string("a"), sequence([string("b"), sequence([string("c"), string("d")])]), sequence([string("e")])])).("abcde", %Position{})
+    == {:ok, "abcde", "", position(5, 0, 5)}
   end
 
   test "concat" do
@@ -117,6 +145,26 @@ defmodule BasicTest do
   test "wrap" do
     assert wrap(string("a")).("abc", position(0, 0, 0))
     == {:ok, ["a"], "bc", position(1, 0, 1)}
+  end
+
+  test "unwrap" do
+    assert unwrap(wrap(string("a"))).("abc", position(0, 0, 0))
+    == {:ok, "a", "bc", position(1, 0, 1)}
+  end
+
+  test "unwrap_r" do
+    assert unwrap_r(wrap(wrap(wrap(wrap(string("a")))))).("abc", position(0, 0, 0))
+    == {:ok, "a", "bc", position(1, 0, 1)}
+  end
+
+  test "pick" do
+    assert many(any) |> (&(pick({&1, &2}))).(1) |> parse("abc", position)
+    == {:ok, "b", "", position(3, 0, 3)}
+  end
+
+  test "slice" do
+    assert many(any) |> (&(slice({&1, &2}))).(2..4) |> parse("abcdefghij", position)
+    == {:ok, ["c", "d", "e"], "", position(10, 0, 10)}
   end
 
   test "sequence_c" do
@@ -133,9 +181,9 @@ defmodule BasicTest do
     assert many_1(string_l("abc")).("abcabcabcdef", %Position{})
     == {:ok,
         [
-          %AST{label: "string", children: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
-          %AST{label: "string", children: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
-          %AST{label: "string", children: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
+          %Meta{label: "string", content: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
+          %Meta{label: "string", content: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
+          %Meta{label: "string", content: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "def", %Position{index: 9, vertical: 0, horizontal: 9}}
     assert many_1(string("abc")).("aabcabcabcdef", %Position{})
     == {:error, "There is not string.", %Position{index: 0, vertical: 0, horizontal: 0}}
