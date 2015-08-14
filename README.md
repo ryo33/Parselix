@@ -5,6 +5,14 @@ A parser combinator library for Elixir.
 ###Document
 [Parselix Document](http://hexdocs.pm/parselix/0.1.0/)  
 
+###Features
+* Attaching Metadata(position and token name)
+* Evaluating While Parsing
+* Recursive Parser
+* Combining Small Parsers
+* Editable Error Messages
+* Documentable
+
 ###For what?
 * To **parse** languages, data formats, and more.  
 * To **format** strings.  
@@ -16,7 +24,7 @@ Add `{:parselix, "~> 0.1.0"}` to deps of your app.
 ###Example
 [See the json parser implementation by Parselix](lib/parselix/prepared/json.ex).  
 And, see the following its usage.  
-```
+```elixir
 iex> use Parselix
 iex> use Parselix.Prepared.JSON
 iex> json |> parse("{\"name\": \"Parselix\"}")
