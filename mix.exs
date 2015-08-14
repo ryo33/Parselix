@@ -5,14 +5,13 @@ defmodule Parselix.Mixfile do
     [app: :parselix,
      name: "Parselix",
      source_url: "https://github.com/ryo33/Parselix",
-     version: "0.1.1",
+     version: "0.1.2",
      description: "A Parser Combinator Library",
      package: [
        contributors: ["ryo33"],
        licenses: ["MIT"],
        links: %{
-         "GitHub" => "https://github.com/ma2gedev/hex_sample",
-         "Document" => "http://hexdocs.pm/parselix/0.1.0/"
+         "GitHub" => "https://github.com/ryo33/Parselix",
        }
      ],
      elixir: "~> 1.0",

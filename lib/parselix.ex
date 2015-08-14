@@ -96,8 +96,6 @@ defmodule Parselix do
   @doc """
   Macro for creating a parser.
 
-  Result format which you can return in the function.
-
   ## Example
 
       parser "any" do
