@@ -22,7 +22,7 @@ A parser combinator library for Elixir.
 Add `{:parselix, "~> 0.1.0"}` to deps of your app.
 
 ###Example
-[See the json parser implementation by Parselix](lib/parselix/prepared/json.ex).  
+[See the json parser implementation by Parselix](https://github.com/ryo33/Parselix/blob/master/lib/parselix/prepared/json.ex).  
 And, see the following its usage.  
 ```elixir
 iex> use Parselix
