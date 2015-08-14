@@ -3,7 +3,7 @@ A parser combinator library for Elixir.
 [![hex.pm version](https://img.shields.io/hexpm/v/parselix.svg)](https://hex.pm/packages/parselix)
 
 ###Document
-[Parselix Document](http://hexdocs.pm/parselix/0.1.0/)  
+[Parselix Document](https://ryo33.github.io/Parselix)  
 
 ###Features
 * Attaching Metadata(position and token name)
