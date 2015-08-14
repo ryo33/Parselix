@@ -5,7 +5,7 @@ defmodule Parselix.Mixfile do
     [app: :parselix,
      name: "Parselix",
      source_url: "https://github.com/ryo33/Parselix",
-     version: "0.1.0",
+     version: "0.1.1",
      description: "A Parser Combinator Library",
      package: [
        contributors: ["ryo33"],
