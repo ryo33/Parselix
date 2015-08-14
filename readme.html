@@ -1,10 +1,10 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     
-    <title>Parselix.Prepared</title>
+    <title>Parselix v0.1.2 README</title>
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc">
@@ -16,8 +16,7 @@
   </head>
   <body>
 
-    
-    <div class="row row-offcanvas row-offcanvas-left">
+<div class="row row-offcanvas row-offcanvas-left">
 <section id="sidebar" class="col-xs-6 col-sm-3 sidebar-offcanvas">
   <p class="pull-right visible-xs">
   <button type="button" class="btn btn-default btn-sm" data-toggle="offcanvas">
@@ -75,42 +74,54 @@
 <section id="content" class="col-xs-12 col-sm-9">
 
 
-      <div class="breadcrumbs">
-        <button type="button" class="btn btn-default btn-sm" data-toggle="offcanvas">
-          <span class="glyphicon glyphicon-menu-hamburger"></span>
-        </button>
-        Parselix v0.1.2 &rarr; <a href="overview.html">Overview</a> &rarr; <a href="Parselix.html#content">Parselix</a> &rarr; <a href="Parselix.Prepared.html#content">Prepared</a>
-      </div>
+<div class="breadcrumbs">
+  <button type="button" class="btn btn-default btn-sm" data-toggle="offcanvas">
+    <span class="glyphicon glyphicon-menu-hamburger"></span>
+  </button>
+  Parselix v0.1.2 &rarr; <a href="index.html#content">README</a>
+</div>
 
-      <h1>
-        Parselix.Prepared
-        
-      </h1>
+<h1 id="parselix">Parselix</h1>
+<p>A parser combinator library for Elixir.<br />
+<a href="https://hex.pm/packages/parselix"><img src="https://img.shields.io/hexpm/v/parselix.svg" alt="hex.pm version" /></a></p>
+<h3 id="document">Document</h3>
+<p><a href="https://ryo33.github.io/Parselix">Parselix Document</a></p>
+<h3 id="features">Features</h3>
+<ul>
+<li>Attaching Metadata(position and token name)</li>
+<li>Evaluating While Parsing</li>
+<li>Recursive Parser</li>
+<li>Combining Small Parsers</li>
+<li>Editable Error Messages</li>
+<li>Documentable</li>
+</ul>
+<h3 id="for-what">For what?</h3>
+<ul>
+<li>To <strong>parse</strong> languages, data formats, and more.<br />
+</li>
+<li>To <strong>format</strong> strings.<br />
+</li>
+<li>To <strong>validate</strong> something such as mail address.</li>
+</ul>
+<h3 id="installation">Installation</h3>
+<p>Add <code>{:parselix, &quot;~&gt; 0.1.0&quot;}</code> to deps of your app.</p>
+<h3 id="example">Example</h3>
+<p><a href="lib/parselix/prepared/json.ex">See the json parser implementation by Parselix</a>.<br />
+And, see the following its usage.</p>
+<pre><code class="elixir">iex&gt; use Parselix
+iex&gt; use Parselix.Prepared.JSON
+iex&gt; json |&gt; parse(&quot;{\&quot;name\&quot;: \&quot;Parselix\&quot;}&quot;)
+{:ok, %{&quot;name&quot; =&gt; &quot;Parselix&quot;}, &quot;&quot;,
+ %Parselix.Position{horizontal: 20, index: 20, vertical: 0}}
+iex&gt; json |&gt; parse(&quot;{\&quot;name\&quot;: \&quot;Parselix}&quot;)
+{:error, &quot;No parser succeeded.&quot;,
+ %Parselix.Position{horizontal: 0, index: 0, vertical: 0}}</code></pre>
+<h3 id="license">License</h3>
+<p>MIT</p>
+<h3 id="author">Author</h3>
+<p><a href="https://github.com/ryo33/" title="ryo33&#39;s github page">ryo33</a></p>
 
-      <ul class="summary_links">
-        
-        
-        
-        
-        
-      </ul>
-
-      
-
-      
-        <a href="https://github.com/ryo33/Parselix/blob/master/lib/parselix/prepared.ex#L1" class="view_source">Source</a>
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-      </section> <!--/content -->
+  </section> <!--/content -->
 </div><!--/row -->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
