@@ -1,17 +1,16 @@
 defmodule JSONTest do
   use ExUnit.Case
   use Parselix
-  use Basic
-  use Common
-  use Prepared
-  use JSON
+  use Parselix.Basic
+  use Parselix.Common
+  use Parselix.Prepared.JSON
 
   test "other" do
     assert {any, string("["), string("]")} |> between |> parse("[a]", position)
     == {:ok, "a", "", position(3, 0, 3)}
     assert any |> token |> parse(" a", position)
     == {:ok, "a", "", position(2, 0, 2)}
-    assert {string("a"), string("b")} |> separate |> parse("ababab", position)
+    assert separate(string("a"), string("b")) |> parse("ababab", position)
     == {:ok, ["a", "a", "a"], "b", position(5, 0, 5)}
   end
 

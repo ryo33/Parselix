@@ -1,6 +1,6 @@
 defmodule Parselix.Common do
   use Parselix
-  use Basic
+  use Parselix.Basic
 
   @moduledoc """
   Provide parsers which is used commonly.
@@ -8,7 +8,7 @@ defmodule Parselix.Common do
 
   defmacro __using__(_opts) do
     quote do
-      import Common
+      import unquote(__MODULE__)
     end
   end
 

@@ -7,28 +7,43 @@ defmodule Parselix.Basic do
 
   defmacro __using__(_opts) do
     quote do
-      import Basic
+      import unquote(__MODULE__)
     end
   end
 
-  @doc "Parse a string which matches regex."
+  @doc "Attaches a meta data to the result of the given parser."
+  def meta(parser, label \\ nil), do: meta_parser({parser, label})
+  parserp "meta_parser" do
+    fn _, option, target, position ->
+      {parser, label} = case option do
+        {parser, label} -> {parser, label}
+        parser -> {parser, nil}
+      end
+      mapper = fn result ->
+        %Meta{label: label, value: result, position: position}
+      end
+      map(parser, mapper).(target, position)
+    end
+  end
+
+  @doc "Parses a string which matches against the given regex."
   parser "regex" do
     fn _, regex, target, _ ->
-      case (Regex.run regex, target, return: :index) |> Enum.find fn {x, _} -> x == 0 end do
+      case (Regex.run regex, target, return: :index) |> Enum.find(fn {x, _} -> x == 0 end) do
         {0, len} -> {:ok, String.slice(target, 0, len), len}
         _ -> {:error, "The regex does not match."}
       end
     end
   end
 
-  @doc "Parse a specified string."
+  @doc "Parses a specified string."
   parser "string" do
     fn _, option, target, _ ->
       if String.starts_with?(target, option), do: {:ok, option, String.length option}, else: {:error, "There is not string."}
     end
   end
 
-  @doc "Parse a specified character."
+  @doc "Parses a specified character."
   parser "char" do
     fn _, option, target, position ->
       case any.(target, position) do
@@ -43,7 +58,7 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Parse a not specified character."
+  @doc "Parses a not specified character."
   parser "not_char" do
     fn _, option, target, position ->
      case char(option).(target, position) do
@@ -53,7 +68,7 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Parse any character."
+  @doc "Parses any character."
   parser "any" do
     fn
       _, _, "", position -> {:error, "EOF appeared.", position}
@@ -61,20 +76,22 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Return a result of parser which succeeds first."
+  @doc "Returns a result of the given parser which succeeds first."
   parser "choice" do
     fn _, option, target, position ->
-      case (Enum.map(option, fn parser -> parser.(target, position) end)
-      |> Enum.find fn
+      found = Enum.map(option, fn parser -> parser.(target, position) end)
+      |> Enum.find(fn
         {:ok, _,  _, _} -> true
-        _ -> false end) do
+        _ -> false
+      end)
+      case found do
           {:ok, ast, remainder, position} -> {:ok, ast, remainder, position}
           _ -> {:error, "No parser succeeded."}
         end
     end
   end
 
-  @doc "Parse 0 times or once."
+  @doc "Parses 0 times or once."
   parser "option" do
     fn _, option, target, position ->
       case option.(target, position) do
@@ -84,21 +101,23 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Return a default value when parser failed."
-  parser "default" do
+  @doc "Returns a default value when parser failed."
+  def default(parser, default), do: default_parser({parser, default})
+  parserp "default_parser" do
     fn _, {parser, default}, target, position ->
-      parser |> option |> (&(map({&1, &2}))).(fn x -> if x == :empty, do: default, else: x end) |> parse(target, position)
+      parser |> option |> (&(map(&1, &2))).(fn x -> if x == :empty, do: default, else: x end) |> parse(target, position)
     end
   end
 
-  @doc "Replace and Return the result of parser."
-  parser "replace" do
+  @doc "Replaces the result of the given parser."
+  def replace(parser, replacement), do: replace_parser({parser, replacement})
+  parserp "replace_parser" do
     fn _, {parser, replacement}, target, position ->
-      parser |> (&(map({&1, &2}))).(fn _ -> replacement end) |> parse(target, position)
+      parser |> (&(map(&1, &2))).(fn _ -> replacement end) |> parse(target, position)
     end
   end
 
-  @doc "Parse in sequence."
+  @doc "Parses in sequence."
   parser "sequence" do
     fn _, option, target, position ->
       (seq = fn
@@ -117,8 +136,10 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Parse 0 or more times."
-  parser "many" do
+  @doc "Parses 0 or more times."
+  def many(parser, min_or_range), do: many_parser({parser, min_or_range})
+  def many(parser), do: many_parser(parser)
+  parserp "many_parser" do
     fn _, option, target, position ->
       (many = fn option, target, position, many ->
         case option.(target, position) do
@@ -144,8 +165,9 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Parse X times."
-  parser "times" do
+  @doc "Parses X times."
+  def times(parser, time), do: times_parser({parser, time})
+  parserp "times_parser" do
     fn _, option, target, current_position ->
       (times = fn {parser, time}, target, position, times, count ->
         case parser.(target, position) do
@@ -165,8 +187,9 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Map the parser result."
-  parser "map" do
+  @doc "Maps the result of the given parser."
+  def map(parser, func), do: map_parser({parser, func})
+  parserp "map_parser" do
     fn _, {parser, func}, target, position ->
       case parser.(target, position) do
         {:ok, result, remainder, position} -> {:ok, func.(result), remainder, position}
@@ -175,20 +198,20 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Remove :empty from the parser result."
+  @doc "Removes :empty from the result of the given parser."
   parser "clean" do
     fn _, option, target, position ->
-      map({option, fn x -> Enum.filter x, fn x -> x != :empty end end}).(target, position)
+      map(option, fn x -> Enum.filter x, fn x -> x != :empty end end).(target, position)
     end
   end
 
-  @doc "Flatten the parser result."
+  @doc "Flattens the result of the given parser."
   parser "flat" do
     fn _, option, target, position ->
       (flat = fn children, flat ->
         case children do
           [head | tail] -> flat.(head, flat) ++ flat.(tail, flat)
-          %Meta{content: children} -> flat.(children, flat)
+          %Meta{value: children} -> flat.(children, flat)
           [] -> []
           x -> [x]
         end
@@ -200,14 +223,14 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Compress the parser result to a string."
+  @doc "Compresses the result of the given parser to a string."
   parser "compress" do
     fn _, option, target, position ->
-      map({flat(option), fn x -> (Enum.filter x, fn x -> x !== :empty end) |> Enum.join end}).(target, position)
+      map(flat(option), fn x -> (Enum.filter x, fn x -> x !== :empty end) |> Enum.join end).(target, position)
     end
   end
 
-  @doc "Flatten the parser result once."
+  @doc "Flattens the result of the given parser once."
   parser "concat" do
     fn _, option, target, position ->
       (concat = fn children, concat ->
@@ -229,7 +252,7 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Put the parser result into an empty array."
+  @doc "Puts the result of the given parser into an empty array."
   parser "wrap" do
     fn _, option, target, position ->
       case option.(target, position) do
@@ -239,7 +262,7 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Put the value out of the parser result."
+  @doc "Puts the value out of the result of the given parser."
   parser "unwrap" do
     fn _, option, target, position ->
       case option.(target, position) do
@@ -249,7 +272,7 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Put the value out of the parser result recursively."
+  @doc "Recursively puts the value out of the result of the given parser."
   parser "unwrap_r" do
     fn _, option, target, position ->
       (unwrap = fn
@@ -263,8 +286,9 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Pick one value from the parser result."
-  parser "pick" do
+  @doc "Picks one value from the result of the given parser."
+  def pick(parser, index), do: pick_parser({parser, index})
+  parserp "pick_parser" do
     fn _, {parser, index}, target, position ->
       case parser.(target, position) do
         {:ok, x, remainder, position} -> {:ok, Enum.at(x, index), remainder, position}
@@ -273,8 +297,9 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Slice the parser result."
-  parser "slice" do
+  @doc "Slices the result of the given parser."
+  def slice(parser, range), do: slice_parser({parser, range})
+  parserp "slice_parser" do
     fn _, {parser, f..l}, target, position ->
       case parser.(target, position) do
         {:ok, x, remainder, position} -> {:ok, Enum.slice(x, f..l), remainder, position}
@@ -302,7 +327,7 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Parse 1 or more times."
+  @doc "Parses 1 or more times."
   parser "many_1" do
     fn _, option, target, position ->
       sequence_c([wrap(option), many(option)]).(target, position)
@@ -316,7 +341,7 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Dump the parser result."
+  @doc "Dumps the result of the given parser."
   parser "dump" do
     fn _, option, target, position ->
       case option.(target, position) do
@@ -326,15 +351,16 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Ignore the parser result."
+  @doc "Ignores the result of the given parser."
   parser "ignore" do
     fn _, option, target, position ->
       dump(option(option)).(target, position)
     end
   end
 
-  @doc "Validate the parser result."
-  parser "check" do
+  @doc "Validates the result of the given parser."
+  def check(parser, func), do: check_parser({parser, func})
+  parserp "check_parser" do
     fn _, {parser, func}, target, position ->
       case parser.(target, position) do
         {:ok, result, remainder, position} ->
@@ -344,7 +370,7 @@ defmodule Parselix.Basic do
     end
   end
 
-  @doc "Parse the end of text."
+  @doc "Parses the end of text."
   parser "eof" do
     fn
       _, _, "", position ->

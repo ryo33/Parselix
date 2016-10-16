@@ -1,8 +1,8 @@
 defmodule CommonTest do
   use ExUnit.Case
   use Parselix
-  use Basic
-  use Common
+  use Parselix.Basic
+  use Parselix.Common
 
   test "whitespace" do
     assert many(whitespace).(" \t\n\r \r\n a  ", position)

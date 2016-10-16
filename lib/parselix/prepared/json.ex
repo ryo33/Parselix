@@ -1,8 +1,7 @@
 defmodule Parselix.Prepared.JSON do
   use Parselix
-  use Basic
-  use Common
-  use Prepared
+  use Parselix.Basic
+  use Parselix.Common
 
   @moduledoc """
   Provide a json parser.
@@ -13,7 +12,7 @@ defmodule Parselix.Prepared.JSON do
 
   defmacro __using__(_opts) do
     quote do
-      import JSON
+      import unquote(__MODULE__)
     end
   end
 
@@ -21,7 +20,7 @@ defmodule Parselix.Prepared.JSON do
     fn _, {parser, left, right}, target, position ->
       [dump(left), parser, dump(right)]
       |> sequence
-      |> (&(pick({&1, &2}))).(1)
+      |> pick(1)
       |> parse(target, position)
     end
   end
@@ -34,9 +33,10 @@ defmodule Parselix.Prepared.JSON do
     end
   end
 
-  parser "separate" do
+  def separate(parser, separator), do: separate_parser({parser, separator})
+  parserp "separate_parser" do
     fn _, {parser, separator}, target, position ->
-      [parser, sequence([dump(separator), parser]) |> (&(pick({&1, &2}))).(1) |> many]
+      [parser, sequence([dump(separator), parser]) |> pick(1) |> many]
       |> sequence
       |> concat
       |> parse(target, position)
@@ -94,7 +94,7 @@ defmodule Parselix.Prepared.JSON do
 
   parser "value" do
     fn _, _, target, position ->
-      [replace({string("false"), false}), replace({string("true"), true}), replace({string("null"), nil}), object, array, json_number, json_string]
+      [replace(string("false"), false), replace(string("true"), true), replace(string("null"), nil), object, array, json_number, json_string]
       |> choice
       |> parse(target, position)
     end
@@ -102,7 +102,7 @@ defmodule Parselix.Prepared.JSON do
 
   parser "object" do
     fn _, _, target, position ->
-      {separate({member, value_separator}) |> (&(default({&1, &2}))).([]) |> (&(map({&1, &2}))).(fn x -> Enum.into(x, %{}) end), begin_object, end_object}
+      {separate(member, value_separator) |> default([]) |> map(fn x -> Enum.into(x, %{}) end), begin_object, end_object}
       |> between
       |> parse(target, position)
     end
@@ -112,14 +112,14 @@ defmodule Parselix.Prepared.JSON do
     fn _, _, target, position ->
       [json_string, name_separator, value]
       |> sequence
-      |> (&(map({&1, &2}))).(fn [key, _, value] -> {key, value} end)
+      |> map(fn [key, _, value] -> {key, value} end)
       |> parse(target, position)
     end
   end
 
   parser "array" do
     fn _, _, target, position ->
-      {separate({value, value_separator}), begin_array, end_array}
+      {separate(value, value_separator), begin_array, end_array}
       |> between
       |> unwrap_r
       |> concat
@@ -138,10 +138,10 @@ defmodule Parselix.Prepared.JSON do
 
   parser "integer" do
     fn _, _, target, position ->
-      [option(string("-")), map({int |> compress, fn x -> x <> ".0" end}), option(exp)]
+      [option(string("-")), map(int |> compress, fn x -> x <> ".0" end), option(exp)]
       |> sequence
       |> compress
-      |> (fn a, b -> map({a, b}) end).(fn x -> String.to_float(x) |> round end)
+      |> (fn a, b -> map(a, b) end).(fn x -> String.to_float(x) |> round end)
       |> parse(target, position)
     end
   end
@@ -159,7 +159,7 @@ defmodule Parselix.Prepared.JSON do
       [option(string("-")), int, frac, option(exp)]
       |> sequence
       |> compress
-      |> (fn a, b -> map({a, b}) end).(fn x -> String.to_float(x) end)
+      |> (fn a, b -> map(a, b) end).(fn x -> String.to_float(x) end)
       |> parse(target, position)
     end
   end
@@ -191,7 +191,7 @@ defmodule Parselix.Prepared.JSON do
 
   parser "json_char" do
     fn _, _, target, position ->
-      [unescaped, [string("\\"), choice([char("\"\\/bfnrt"), times({hex_digit, 4})])] |> sequence]
+      [unescaped, [string("\\"), choice([char("\"\\/bfnrt"), times(hex_digit, 4)])] |> sequence]
       |> choice
       |> parse(target, position)
     end
@@ -200,7 +200,7 @@ defmodule Parselix.Prepared.JSON do
   parser "unescaped" do
     fn _, _, target, position ->
       any
-      |> (fn a, b -> check {a, b} end).(fn x -> (
+      |> (fn a, b -> check(a, b) end).(fn x -> (
       [x] = to_char_list(x)
       if x == 0x20 || x == 0x21 || (x >= 0x23 && x <= 0x5B) || (x >= 0x5D && x <= 0x10FFFF), do: true, else: false
       )end)

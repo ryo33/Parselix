@@ -1,7 +1,16 @@
 defmodule BasicTest do
   use ExUnit.Case
   use Parselix
-  use Basic
+  use Parselix.Basic
+
+  test "meta" do
+    result = %Meta{label: nil, value: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}}
+    assert meta(string("abc")).("abcdef", %Position{})
+    == {:ok, result, "def", %Position{index: 3, vertical: 0, horizontal: 3}}
+    result = %Meta{label: "string", value: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}}
+    assert meta(string("abc"), "string").("abcdef", %Position{})
+    == {:ok, result, "def", %Position{index: 3, vertical: 0, horizontal: 3}}
+  end
 
   test "regex" do
     assert regex(~r/ab*c/).("abbcdef", position)
@@ -53,70 +62,70 @@ defmodule BasicTest do
   end
 
   test "default" do
-    assert default({string("abc"), "default"}).("abcdef", %Position{})
+    assert default(string("abc"), "default").("abcdef", %Position{})
     == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
-    assert default({string("bc"), "default"}).("abcdef", %Position{index: 100})
+    assert default(string("bc"), "default").("abcdef", %Position{index: 100})
     == {:ok, "default", "abcdef", %Position{index: 100}}
   end
 
   test "replace" do
-    assert replace({string("abc"), "replacement"}).("abcdef", %Position{})
+    assert replace(string("abc"), "replacement").("abcdef", %Position{})
     == {:ok, "replacement", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
-    assert replace({string("bc"), "replacement"}).("abcdef", %Position{index: 100})
+    assert replace(string("bc"), "replacement").("abcdef", %Position{index: 100})
     == {:error, "There is not string.", position(100, 0, 0)}
   end
 
   test "sequence" do
-    assert sequence([string_l("abc"), string_l("def"), string_l("ghi")]).("abcdefghijkl", %Position{})
+    assert sequence([meta(string("abc")), meta(string("def")), meta(string("ghi"))]).("abcdefghijkl", %Position{})
     == {:ok,
         [
-          %Meta{label: "string", content: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
-          %Meta{label: "string", content: "def", position: %Position{index: 3, vertical: 0, horizontal: 3}},
-          %Meta{label: "string", content: "ghi", position: %Position{index: 6, vertical: 0, horizontal: 6}}
+          %Meta{label: nil, value: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
+          %Meta{label: nil, value: "def", position: %Position{index: 3, vertical: 0, horizontal: 3}},
+          %Meta{label: nil, value: "ghi", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "jkl", %Position{index: 9, vertical: 0, horizontal: 9}}
     assert sequence([string("abc"), string("ddf"), string("ghi")]).("abcdefghijkl", %Position{})
     == {:error, "There is not string.", %Parselix.Position{horizontal: 3, index: 3, vertical: 0}}
   end
 
   test "many" do
-    assert many(string_l("abc")).("abcabcabcdef", %Position{})
+    assert many(meta(string("abc"))).("abcabcabcdef", %Position{})
     == {:ok,
         [
-          %Meta{label: "string", content: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
-          %Meta{label: "string", content: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
-          %Meta{label: "string", content: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
+          %Meta{label: nil, value: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
+          %Meta{label: nil, value: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
+          %Meta{label: nil, value: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "def", %Position{index: 9, vertical: 0, horizontal: 9}}
     assert many(string("abc")).("aabcabcabcdef", position)
     == {:ok, [], "aabcabcabcdef", %Position{index: 0, vertical: 0, horizontal: 0}}
-    assert many({string("abc"), 3..5}).("abcabc", position)
+    assert many(string("abc"), 3..5).("abcabc", position)
     == {:error, "The count is out of the range", position}
-    assert many({string("abc"), 3..5}).("abcabcabc", position)
+    assert many(string("abc"), 3..5).("abcabcabc", position)
     == {:ok, ["abc", "abc", "abc"], "", position(9, 0, 9)}
-    assert many({string("abc"), 3..5}).("abcabcabcabc", position)
+    assert many(string("abc"), 3..5).("abcabcabcabc", position)
     == {:ok, ["abc", "abc", "abc", "abc"], "", position(12, 0, 12)}
-    assert many({string("abc"), 3..5}).("abcabcabcabcabc", position)
+    assert many(string("abc"), 3..5).("abcabcabcabcabc", position)
     == {:ok, ["abc", "abc", "abc", "abc", "abc"], "", position(15, 0, 15)}
-    assert many({string("abc"), 3..5}).("abcabcabcabcabcabc", position)
+    assert many(string("abc"), 3..5).("abcabcabcabcabcabc", position)
     == {:error, "The count is out of the range", position}
-    assert many({string("abc"), 2}).("abc", position)
+    assert many(string("abc"), 2).("abc", position)
     == {:error, "The count is out of the range", position}
-    assert many({string("abc"), 2}).("abcabc", position)
+    assert many(string("abc"), 2).("abcabc", position)
     == {:ok, ["abc", "abc"], "", position(6, 0, 6)}
-    assert many({string("abc"), 2}).("abcabcabc", position)
+    assert many(string("abc"), 2).("abcabcabc", position)
     == {:ok, ["abc", "abc", "abc"], "", position(9, 0, 9)}
   end
 
   test "times" do
-    assert times({string("abc"), 3}).("abcabc", position)
+    assert times(string("abc"), 3).("abcabc", position)
     == {:error, "The parser can't parse this 3 times.", %Parselix.Position{horizontal: 0, index: 0, vertical: 0}}
-    assert times({string("abc"), 3}).("abcabcabc", position)
+    assert times(string("abc"), 3).("abcabcabc", position)
     == {:ok, ["abc", "abc", "abc"], "", position(9, 0, 9)}
-    assert times({string("abc"), 3}).("abcabcabcabc", position)
+    assert times(string("abc"), 3).("abcabcabcabc", position)
     == {:ok, ["abc", "abc", "abc"], "abc", position(9, 0, 9)}
   end
 
   test "map" do
-    assert map({string("123"), fn x -> String.to_integer x end}).("123456", position())
+    assert map(string("123"), fn x -> String.to_integer x end).("123456", position())
     == {:ok, 123, "456", position(3, 0, 3)}
   end
 
@@ -158,12 +167,12 @@ defmodule BasicTest do
   end
 
   test "pick" do
-    assert many(any) |> (&(pick({&1, &2}))).(1) |> parse("abc", position)
+    assert many(any) |> pick(1) |> parse("abc", position)
     == {:ok, "b", "", position(3, 0, 3)}
   end
 
   test "slice" do
-    assert many(any) |> (&(slice({&1, &2}))).(2..4) |> parse("abcdefghij", position)
+    assert many(any) |> slice(2..4) |> parse("abcdefghij", position)
     == {:ok, ["c", "d", "e"], "", position(10, 0, 10)}
   end
 
@@ -178,12 +187,12 @@ defmodule BasicTest do
   end
 
   test "many_1" do
-    assert many_1(string_l("abc")).("abcabcabcdef", %Position{})
+    assert many_1(meta(string("abc"))).("abcabcabcdef", %Position{})
     == {:ok,
         [
-          %Meta{label: "string", content: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
-          %Meta{label: "string", content: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
-          %Meta{label: "string", content: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
+          %Meta{label: nil, value: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}},
+          %Meta{label: nil, value: "abc", position: %Position{index: 3, vertical: 0, horizontal: 3}},
+          %Meta{label: nil, value: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "def", %Position{index: 9, vertical: 0, horizontal: 9}}
     assert many_1(string("abc")).("aabcabcabcdef", %Position{})
     == {:error, "There is not string.", %Position{index: 0, vertical: 0, horizontal: 0}}
@@ -211,9 +220,9 @@ defmodule BasicTest do
   end
 
   test "check" do
-    assert check({string("abc"), fn x -> if x === "abc", do: true end}).("abcdef", position)
+    assert check(string("abc"), fn x -> if x === "abc", do: true end).("abcdef", position)
     == {:ok, "abc", "def", position(3, 0, 3)}
-    assert check({string("abc"), fn x -> if x === "xxx", do: true end}).("abcdef", position)
+    assert check(string("abc"), fn x -> if x === "xxx", do: true end).("abcdef", position)
     == {:error, "\"abc\" is a bad result.", position}
   end
 
