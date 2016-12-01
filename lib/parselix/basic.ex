@@ -11,6 +11,16 @@ defmodule Parselix.Basic do
     end
   end
 
+  @doc "Replaces error messages."
+  def error_message(parser, message) do
+    fn target, position ->
+      case parser.(target, position) do
+        {:error, _, _} -> {:error, message, position}
+        x -> x
+      end
+    end
+  end
+
   @doc "Attaches a meta data to the result of the given parser."
   def meta(parser, label \\ nil), do: meta_parser({parser, label})
   parserp "meta_parser" do

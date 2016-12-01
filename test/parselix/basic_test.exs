@@ -3,6 +3,21 @@ defmodule BasicTest do
   use Parselix
   use Parselix.Basic
 
+  def string2(str) do
+    str
+    |> String.graphemes()
+    |> Enum.map(fn char -> string(char) end)
+    |> sequence
+    |> compress
+  end
+
+  test "error_message" do
+    assert error_message(string2("abc"), "error").("abcdef", %Position{})
+    == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
+    assert error_message(string2("abx"), "error").("abcdef", %Position{})
+    == {:error, "error", %Position{}}
+  end
+
   test "meta" do
     result = %Meta{label: nil, value: "abc", position: %Position{index: 0, vertical: 0, horizontal: 0}}
     assert meta(string("abc")).("abcdef", %Position{})
@@ -22,6 +37,8 @@ defmodule BasicTest do
   test "string" do
     assert string("abc").("abcdef", %Position{})
     == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
+    assert string("abx").("abcdef", %Position{})
+    == {:error, "There is not string.", %Position{}}
   end
 
   test "char" do
@@ -52,13 +69,7 @@ defmodule BasicTest do
   test "choice" do
     assert (choice([string("abcdefg"), string("bcd"), string("abc")])).("abcdef", %Position{})
     == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
-    string2 = fn str ->
-      str
-      |> String.graphemes()
-      |> Enum.map(fn char -> string(char) end)
-      |> sequence
-    end
-    assert (choice([string2.("abx"), string2.("abcdx"), string2.("abcx")])).("abcdef", %Position{})
+    assert (choice([string2("abx"), string2("abcdx"), string2("abcx")])).("abcdef", %Position{})
     == {:error, "There is not string.", %Position{index: 4, vertical: 0, horizontal: 4}}
   end
 
