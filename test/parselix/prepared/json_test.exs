@@ -5,13 +5,16 @@ defmodule JSONTest do
   use Parselix.Common
   use Parselix.Prepared.JSON
 
+  @moduletag timeout: 1000
+
   test "other" do
-    assert {any, string("["), string("]")} |> between |> parse("[a]", position)
+    assert between(any, string("["), string("]")) |> parse("[a]", position)
     == {:ok, "a", "", position(3, 0, 3)}
     assert any |> token |> parse(" a", position)
     == {:ok, "a", "", position(2, 0, 2)}
     assert separate(string("a"), string("b")) |> parse("ababab", position)
     == {:ok, ["a", "a", "a"], "b", position(5, 0, 5)}
+    assert string(":") |> parse(":", position)
   end
 
   test "literal" do
@@ -54,8 +57,6 @@ defmodule JSONTest do
     == {:ok, %{"value" => 3.5}, "", position(14, 0, 14)}
     assert value.("[3.5, 2]", position)
     == {:ok, [3.5, 2], "", position(8, 0, 8)}
-    assert value |> parse("\"abc\"")
-    == {:ok, "abc", "", position(5, 0, 5)}
   end
 
   test "json" do

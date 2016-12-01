@@ -8,7 +8,7 @@ defmodule BasicTest do
     |> String.graphemes()
     |> Enum.map(fn char -> string(char) end)
     |> sequence
-    |> compress
+    |> concat
   end
 
   test "error_message" do
@@ -117,7 +117,7 @@ defmodule BasicTest do
     assert many(string("abc")).("aabcabcabcdef", position)
     == {:ok, [], "aabcabcabcdef", %Position{index: 0, vertical: 0, horizontal: 0}}
     assert many(string("abc"), 3..5).("abcabc", position)
-    == {:error, "The count is out of the range", position}
+    == {:error, "The count is out of the range.", position}
     assert many(string("abc"), 3..5).("abcabcabc", position)
     == {:ok, ["abc", "abc", "abc"], "", position(9, 0, 9)}
     assert many(string("abc"), 3..5).("abcabcabcabc", position)
@@ -125,9 +125,9 @@ defmodule BasicTest do
     assert many(string("abc"), 3..5).("abcabcabcabcabc", position)
     == {:ok, ["abc", "abc", "abc", "abc", "abc"], "", position(15, 0, 15)}
     assert many(string("abc"), 3..5).("abcabcabcabcabcabc", position)
-    == {:error, "The count is out of the range", position}
+    == {:ok, ["abc", "abc", "abc", "abc", "abc"], "abc", position(15, 0, 15)}
     assert many(string("abc"), 2).("abc", position)
-    == {:error, "The count is out of the range", position}
+    == {:error, "The count is out of the range.", position}
     assert many(string("abc"), 2).("abcabc", position)
     == {:ok, ["abc", "abc"], "", position(6, 0, 6)}
     assert many(string("abc"), 2).("abcabcabc", position)
@@ -136,7 +136,7 @@ defmodule BasicTest do
 
   test "times" do
     assert times(string("abc"), 3).("abcabc", position)
-    == {:error, "The parser can't parse this 3 times.", %Parselix.Position{horizontal: 0, index: 0, vertical: 0}}
+    == {:error, "There is not string.", %Parselix.Position{vertical: 0, horizontal: 6, index: 6}}
     assert times(string("abc"), 3).("abcabcabc", position)
     == {:ok, ["abc", "abc", "abc"], "", position(9, 0, 9)}
     assert times(string("abc"), 3).("abcabcabcabc", position)
@@ -158,16 +158,14 @@ defmodule BasicTest do
     == {:ok, ["a", "b", "c", "d", "e"], "", position(5, 0, 5)}
   end
 
-  test "compress" do
-    assert compress(sequence([string("a"), sequence([string("b"), sequence([string("c"), string("d")])]), sequence([string("e")])])).("abcde", %Position{})
-    == {:ok, "abcde", "", position(5, 0, 5)}
+  test "flat_once" do
+    assert flat_once(sequence([string("a"), sequence([string("b"), sequence([string("c"), string("d")])]), sequence([string("e")])])).("abcde", %Position{})
+    == {:ok, ["a", "b", ["c", "d"], "e"], "", position(5, 0, 5)}
   end
 
   test "concat" do
     assert concat(sequence([string("a"), sequence([string("b"), sequence([string("c"), string("d")])]), sequence([string("e")])])).("abcde", %Position{})
-    == {:ok, ["a", "b", ["c", "d"], "e"], "", position(5, 0, 5)}
-    assert sequence_c([ignore(string("abc")), string("def")]).("abcdef", position())
-    == {:ok, ["def"], "", position(6, 0, 6)}
+    == {:ok, "abcde", "", position(5, 0, 5)}
   end
 
   test "wrap" do
@@ -195,16 +193,6 @@ defmodule BasicTest do
     == {:ok, ["c", "d", "e"], "", position(10, 0, 10)}
   end
 
-  test "sequence_c" do
-    assert sequence_c([string("a"), sequence([string("b"), sequence([string("c"), string("d")])]), sequence([string("e")])]).("abcde", %Position{})
-    == {:ok, ["a", "b", ["c", "d"], "e"], "", position(5, 0, 5)}
-  end
-
-  test "many_c" do
-    assert many_c(sequence([string("a"), sequence([string("b"), string("c")])])).("abcabcabc", %Position{})
-    == {:ok, ["a", ["b", "c"], "a", ["b", "c"], "a", ["b", "c"]], "", position(9, 0, 9)}
-  end
-
   test "many_1" do
     assert many_1(meta(string("abc"))).("abcabcabcdef", %Position{})
     == {:ok,
@@ -214,14 +202,7 @@ defmodule BasicTest do
           %Meta{label: nil, value: "abc", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "def", %Position{index: 9, vertical: 0, horizontal: 9}}
     assert many_1(string("abc")).("aabcabcabcdef", %Position{})
-    == {:error, "There is not string.", %Position{index: 0, vertical: 0, horizontal: 0}}
-  end
-
-  test "many_1_c" do
-    assert many_1_c(sequence([string("a"), sequence([string("b"), string("c")])])).("abcabcabc", %Position{})
-    == {:ok, ["a", ["b", "c"], "a", ["b", "c"], "a", ["b", "c"]], "", position(9, 0, 9)}
-    assert many_1_c(sequence([string("a"), sequence([string("b"), string("c")])])).("dbcabcabc", %Position{})
-    == {:error, "There is not string.", position(0, 0, 0)}
+    == {:error, "The count is out of the range.", %Position{index: 0, vertical: 0, horizontal: 0}}
   end
 
   test "dump" do
@@ -249,9 +230,9 @@ defmodule BasicTest do
     assert eof().("abc", position)
     == {:error, "There is not EOF.", position}
     assert eof().("", position)
-    == {:ok, :empty, "", position}
+    == {:ok, :eof, "", position}
     assert sequence([string("abc"), eof()]).("abc", position)
-    == {:ok, ["abc", :empty], "", position(3, 0, 3)}
+    == {:ok, ["abc", :eof], "", position(3, 0, 3)}
   end
 
 end

@@ -22,13 +22,9 @@ defmodule Parselix.Basic do
   end
 
   @doc "Attaches a meta data to the result of the given parser."
-  def meta(parser, label \\ nil), do: meta_parser({parser, label})
-  parserp "meta_parser" do
-    fn _, option, target, position ->
-      {parser, label} = case option do
-        {parser, label} -> {parser, label}
-        parser -> {parser, nil}
-      end
+  def meta(parser), do: meta(parser, nil)
+  parser :meta, [parser, label] do
+    fn target, position ->
       mapper = fn result ->
         %Meta{label: label, value: result, position: position}
       end
@@ -37,25 +33,31 @@ defmodule Parselix.Basic do
   end
 
   @doc "Parses a string which matches against the given regex."
-  parser "regex" do
-    fn _, regex, target, _ ->
+  parser :regex, [regex] do
+    fn target, position ->
       case (Regex.run regex, target, return: :index) |> Enum.find(fn {x, _} -> x == 0 end) do
         {0, len} -> {:ok, String.slice(target, 0, len), len}
         _ -> {:error, "The regex does not match."}
       end
+      |> format_result("regex", target, position)
     end
   end
 
   @doc "Parses a specified string."
-  parser "string" do
-    fn _, option, target, _ ->
-      if String.starts_with?(target, option), do: {:ok, option, String.length option}, else: {:error, "There is not string."}
+  parser :string, [option] do
+    fn target, position ->
+      if String.starts_with?(target, option) do
+        {:ok, option, String.length option}
+      else
+        {:error, "There is not string."}
+      end
+      |> format_result("string", target, position)
     end
   end
 
   @doc "Parses a specified character."
-  parser "char" do
-    fn _, option, target, position ->
+  parser :char, [option] do
+    fn target, position ->
       case any.(target, position) do
         {:ok, char, remainder, position} ->
           if String.contains? option, char do
@@ -65,41 +67,45 @@ defmodule Parselix.Basic do
           end
         x -> x
       end
+      |> format_result("char", target, position)
     end
   end
 
   @doc "Parses a not specified character."
-  parser "not_char" do
-    fn _, option, target, position ->
-     case char(option).(target, position) do
+  parser :not_char, [option] do
+    fn target, position ->
+      case char(option).(target, position) do
         {:ok, _, _, _} -> {:error, "\"#{String.first target}\" appeared.", position}
         _ -> any().(target, position)
       end
+      |> format_result("not_char", target, position)
     end
   end
 
   @doc "Parses any character."
-  parser "any" do
-    fn
-      _, _, "", position -> {:error, "EOF appeared.", position}
-      _, _, x, _ -> {:ok, String.first(x), 1}
+  parser :any do
+    fn target, position ->
+      case target do
+        "" -> {:error, "EOF appeared.", position}
+        x -> {:ok, String.first(x), 1}
+      end
+      |> format_result("any", target, position)
     end
   end
 
   @doc "Returns a result of the given parser which succeeds first."
   def choice([]) do
-    fn target, position ->
-      {:error, "No parser succeeded"}
-      |> format_result("choice", target, position)
+    fn _, position ->
+      {:error, "No parser succeeded", position}
     end
   end
   def choice([parser | tail]) do
     fn target, position ->
       case parser.(target, position) do
-        {:ok, ast, remainder, position} = result -> result
+        {:ok, _, _, _} = result -> result
         {:error, _, pos1} = error1 ->
           case choice(tail).(target, position) do
-            {:ok, ast, remainder, position} = result -> result
+            {:ok, _, _, _} = result -> result
             {:error, _, pos2} = error2 -> if pos1.index < pos2.index do
               error2
             else
@@ -112,8 +118,8 @@ defmodule Parselix.Basic do
   end
 
   @doc "Parses 0 times or once."
-  parser "option" do
-    fn _, option, target, position ->
+  parser :option, [option] do
+    fn target, position ->
       case option.(target, position) do
         {:ok, _, _, _} = x -> x
         _ -> {:ok, :empty, target, position}
@@ -122,95 +128,81 @@ defmodule Parselix.Basic do
   end
 
   @doc "Returns a default value when parser failed."
-  def default(parser, default), do: default_parser({parser, default})
-  parserp "default_parser" do
-    fn _, {parser, default}, target, position ->
-      parser |> option |> (&(map(&1, &2))).(fn x -> if x == :empty, do: default, else: x end) |> parse(target, position)
-    end
+  parser :default, [parser, default] do
+    parser |> option |> map(fn x -> if x == :empty, do: default, else: x end)
   end
 
   @doc "Replaces the result of the given parser."
-  def replace(parser, replacement), do: replace_parser({parser, replacement})
-  parserp "replace_parser" do
-    fn _, {parser, replacement}, target, position ->
-      parser |> (&(map(&1, &2))).(fn _ -> replacement end) |> parse(target, position)
-    end
+  parser :replace, [parser, replacement] do
+    parser |> map(fn _ -> replacement end)
   end
 
   @doc "Parses in sequence."
-  parser "sequence" do
-    fn _, option, target, position ->
-      (seq = fn
-        target, position, [head | tail], seq ->
-          case head.(target, position) do
-            {:ok, ast, remainder, position} ->
-              case seq.(remainder, position, tail, seq) do
-                {:ok, next_ast, remainder, position} -> {:ok, [ast | next_ast], remainder, position}
-                x -> x
-              end
-            x -> x
-          end
-        target, position, [], _ -> {:ok, [], target, position}
+  def sequence([]), do: fn target, position -> {:ok, [], target, position} end
+  def sequence([parser | tail]) do
+    fn target, position ->
+      case parser.(target, position) do
+        {:ok, result, remainder, position} ->
+          sequence(tail)
+          |> map(fn tail_result ->
+            [result | tail_result]
+          end)
+          |> parse(remainder, position)
+        x -> x
       end
-      seq.(target, position, option, seq))
     end
   end
 
   @doc "Parses 0 or more times."
-  def many(parser, min_or_range), do: many_parser({parser, min_or_range})
-  def many(parser), do: many_parser(parser)
-  parserp "many_parser" do
-    fn _, option, target, position ->
-      (many = fn option, target, position, many ->
-        case option.(target, position) do
-          {:ok, ast, remainder, position} ->
-            case many.(option, remainder, position, many) do
-              {{:ok, next_ast, remainder, position}, count} -> {{:ok, [ast | next_ast], remainder, position}, count + 1}
-              _ -> {{:ok, [ast], remainder, position}, 1}
+  def many(parser, min..max), do: many(parser, min, max)
+  def many(parser, min \\ 0, max \\ -1) do
+    fn target, position ->
+      if max == 0 do
+        {:ok, [], target, position}
+      else
+        case parser.(target, position) do
+          {:ok, [], _, _} = result -> result
+          {:ok, result, remainder, position} ->
+            many(parser, min - 1, max - 1)
+            |> map(fn tail_result ->
+              [result | tail_result]
+            end)
+            |> parse(remainder, position)
+          x -> x
+        end
+        |> case do
+          {:error, _, _} ->
+            if min <= 0 do
+              {:ok, [], target, position}
+            else
+              {:error, "The count is out of the range.", position}
             end
-          _ -> {{:ok, [], target, position}, 0}
+          x -> x
         end
       end
-      case option do
-        {parser, min..max} ->
-          ({result, count} = many.(parser, target, position, many)
-          if count >= min and count <= max, do: result, else: {:error, "The count is out of the range"})
-        {parser, min} ->
-          ({result, count} = many.(parser, target, position, many)
-          if count >= min, do: result, else: {:error, "The count is out of the range"})
-        parser ->
-          ({result, _} = many.(parser, target, position, many)
-          result)
-      end)
     end
   end
 
   @doc "Parses X times."
-  def times(parser, time), do: times_parser({parser, time})
-  parserp "times_parser" do
-    fn _, option, target, current_position ->
-      (times = fn {parser, time}, target, position, times, count ->
-        case parser.(target, position) do
-          {:ok, ast, remainder, position} ->
-            if count + 1 == time do
-              {:ok, [ast], remainder, position}
-            else
-              case times.(option, remainder, position, times, count + 1) do
-                {:ok, next_ast, remainder, position} -> {:ok, [ast | next_ast], remainder, position}
-                _ -> {:error, "The parser can't parse this #{time} times.", current_position}
-              end
-            end
-          _ -> {:error, "The parser can't parse this #{time} times.", current_position}
-        end
+  def times(_parser, time) when time <= 0, do: fn target, position -> {:ok, [], target, position} end
+  def times(parser, time) do
+    fn target, position ->
+      case parser.(target, position) do
+        {:ok, [], _, _} = result -> result
+        {:ok, result, remainder, position} ->
+          times(parser, time - 1)
+          |> map(fn tail_result ->
+            [result | tail_result]
+          end)
+          |> parse(remainder, position)
+        x -> x
       end
-      times.(option, target, current_position, times, 0))
     end
   end
 
   @doc "Maps the result of the given parser."
-  def map(parser, func), do: map_parser({parser, func})
-  parserp "map_parser" do
-    fn _, {parser, func}, target, position ->
+  def map(parser, func) do
+    fn target, position ->
       case parser.(target, position) do
         {:ok, result, remainder, position} -> {:ok, func.(result), remainder, position}
         x -> x
@@ -219,184 +211,108 @@ defmodule Parselix.Basic do
   end
 
   @doc "Removes :empty from the result of the given parser."
-  parser "clean" do
-    fn _, option, target, position ->
-      map(option, fn x -> Enum.filter x, fn x -> x != :empty end end).(target, position)
-    end
+  parser :clean, [parser] do
+    parser |> map(fn x -> Enum.filter x, fn x -> x != :empty end end)
   end
 
   @doc "Flattens the result of the given parser."
-  parser "flat" do
-    fn _, option, target, position ->
-      (flat = fn children, flat ->
-        case children do
-          [head | tail] -> flat.(head, flat) ++ flat.(tail, flat)
-          %Meta{value: children} -> flat.(children, flat)
-          [] -> []
-          x -> [x]
-        end
-      end
-      case option.(target, position) do
-        {:ok, children, remainder, position} -> {:ok, flat.(children, flat), remainder, position}
+  parser :flat, [parser] do
+    func = fn x, func ->
+      case x do
+        list when is_list(list) -> flatten(list, &func.(&1, func))
         x -> x
-      end)
+      end
     end
-  end
-
-  @doc "Compresses the result of the given parser to a string."
-  parser "compress" do
-    fn _, option, target, position ->
-      map(flat(option), fn x -> (Enum.filter x, fn x -> x !== :empty end) |> Enum.join end).(target, position)
-    end
+    parser |> map(&flatten(&1, fn x -> func.(x, func) end))
   end
 
   @doc "Flattens the result of the given parser once."
-  parser "concat" do
-    fn _, option, target, position ->
-      (concat = fn children, concat ->
-        case children do
-          [head | tail] ->
-            case head do
-              :empty -> concat.(tail, concat)
-              head when is_list(head) -> head ++ concat.(tail, concat)
-              head -> [head | concat.(tail, concat)]
-            end
-          [] -> []
-          x -> [x]
-        end
-      end
-      case option.(target, position) do
-        {:ok, children, remainder, position} -> {:ok, concat.(children, concat), remainder, position}
-        x -> x
-      end)
+  parser :flat_once, [parser] do
+    parser |> map(&flatten/1)
+  end
+
+  defp flatten(_list, _mapper \\ fn x -> x end)
+  defp flatten([head | tail], mapper) do
+    case head do
+      head when is_list(head) -> mapper.(head) ++ flatten(tail, mapper)
+      head -> [mapper.(head) | flatten(tail, mapper)]
     end
+  end
+  defp flatten([], _mapper), do: []
+  defp flatten(x, _mapper), do: [x]
+
+  @doc "Concatenates the result of the given parser to a string."
+  parser :concat, [parser] do
+    parser |> flat |> map(fn x -> (Enum.filter x, fn x -> x !== :empty end) |> Enum.join end)
   end
 
   @doc "Puts the result of the given parser into an empty array."
-  parser "wrap" do
-    fn _, option, target, position ->
-      case option.(target, position) do
-        {:ok, x, remainder, position} -> {:ok, [x], remainder, position}
-        x -> x
-      end
-    end
+  parser :wrap, [parser] do
+    parser |> map(&([&1]))
   end
 
   @doc "Puts the value out of the result of the given parser."
-  parser "unwrap" do
-    fn _, option, target, position ->
-      case option.(target, position) do
-        {:ok, [x], remainder, position} -> {:ok, x, remainder, position}
-        x -> x
-      end
-    end
+  parser :unwrap, [parser] do
+    parser |> map(fn [x] -> x end)
   end
 
   @doc "Recursively puts the value out of the result of the given parser."
-  parser "unwrap_r" do
-    fn _, option, target, position ->
-      (unwrap = fn
-        [x], unwrap -> unwrap.(x, unwrap)
-        x, _ -> x
-      end
-      case option.(target, position) do
-        {:ok, x, remainder, position} -> {:ok, unwrap.(x, unwrap), remainder, position}
-        x -> x
-      end)
+  parser :unwrap_r, [parser] do
+    unwrap = fn
+      [x], unwrap -> unwrap.(x, unwrap)
+      x, _ -> x
     end
+    parser |> map(&unwrap.(&1, unwrap))
   end
 
   @doc "Picks one value from the result of the given parser."
-  def pick(parser, index), do: pick_parser({parser, index})
-  parserp "pick_parser" do
-    fn _, {parser, index}, target, position ->
-      case parser.(target, position) do
-        {:ok, x, remainder, position} -> {:ok, Enum.at(x, index), remainder, position}
-        x -> x
-      end
-    end
+  parser :pick, [parser, index] do
+    parser |> map(&Enum.at(&1, index))
   end
 
   @doc "Slices the result of the given parser."
-  def slice(parser, range), do: slice_parser({parser, range})
-  parserp "slice_parser" do
-    fn _, {parser, f..l}, target, position ->
-      case parser.(target, position) do
-        {:ok, x, remainder, position} -> {:ok, Enum.slice(x, f..l), remainder, position}
-        x -> x
-      end
-      _, {parser, start, count}, target, position ->
-      case parser.(target, position) do
-        {:ok, x, remainder, position} -> {:ok, Enum.slice(x, start, count), remainder, position}
-        x -> x
-      end
-    end
+  parser :slice, [parser, range] do
+    parser |> map(&Enum.slice(&1, range))
   end
-
-  @doc "Optimized implementation of concat(sequence(parser))."
-  parser "sequence_c" do
-    fn _, option, target, position ->
-      concat(sequence(option)).(target, position)
-    end
-  end
-
-  @doc "Optimized implementation of concat(many(parser))."
-  parser "many_c" do
-    fn _, option, target, position ->
-      concat(many(option)).(target, position)
-    end
+  parser :slice, [parser, start, count] do
+    parser |> map(&Enum.slice(&1, start, count))
   end
 
   @doc "Parses 1 or more times."
-  parser "many_1" do
-    fn _, option, target, position ->
-      sequence_c([wrap(option), many(option)]).(target, position)
-    end
-  end
-
-  @doc "Optimized implementation of concat(many_1(parser))."
-  parser "many_1_c" do
-    fn _, option, target, position ->
-      concat(sequence_c([wrap(option), many(option)])).(target, position)
+  parser :many_1, [option] do
+    fn target, position ->
+      many(option, 1)
+      |> parse(target, position)
     end
   end
 
   @doc "Dumps the result of the given parser."
-  parser "dump" do
-    fn _, option, target, position ->
-      case option.(target, position) do
-        {:ok, _, remainder, position} -> {:ok, :empty, remainder, position}
-        x -> x
-      end
-    end
+  parser :dump, [parser] do
+    parser |> map(fn _ -> :empty end)
   end
 
   @doc "Ignores the result of the given parser."
-  parser "ignore" do
-    fn _, option, target, position ->
-      dump(option(option)).(target, position)
-    end
+  parser :ignore, [parser] do
+    parser |> option() |> dump()
   end
 
   @doc "Validates the result of the given parser."
-  def check(parser, func), do: check_parser({parser, func})
-  parserp "check_parser" do
-    fn _, {parser, func}, target, position ->
+  parser :check, [parser, func] do
+    fn target, position ->
       case parser.(target, position) do
         {:ok, result, remainder, position} ->
           if func.(result) === true, do: {:ok, result, remainder, position}, else: {:error, "#{inspect result} is a bad result."}
         x -> x
       end
+      |> format_result("check", target, position)
     end
   end
 
   @doc "Parses the end of text."
-  parser "eof" do
+  parser :eof do
     fn
-      _, _, "", position ->
-        {:ok, :empty, "", position}
-      _, _, _, _ -> {:error, "There is not EOF."}
+      "", position -> {:ok, :eof, "", position}
+      _, position -> {:error, "There is not EOF.", position}
     end
   end
-
 end
