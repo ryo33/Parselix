@@ -93,20 +93,26 @@ defmodule Parselix do
     get_position current, target, String.length(target) - String.length(remainder)
   end
 
+  def format_result(result, name \\ nil, target, current_position) do
+    name = if is_nil(name), do: "A parser", else: "\"#{name}\""
+    case result do
+      {:ok, children, remainder, position} = x -> x
+      {:ok, children, remainder} when is_binary(remainder) ->
+        {:ok, children, remainder, get_position(current_position, target, remainder)}
+      {:ok, children, consumed} when is_integer(consumed) ->
+        {:ok, children, String.slice(target, Range.new(consumed, -1)), get_position(current_position, target, consumed)}
+      {:error, message, position} = x -> x
+      {:error, message} -> {:error, message, current_position}
+      x -> {:error, "#{name} returns a misformed result.\n#{inspect x}", current_position}
+    end
+  end
+
   defp parser_body(name, parser_name, block) do
     quote do
       fn target, current_position ->
         own = fn x -> apply(__MODULE__, unquote(parser_name), [x]) end
-        case (unquote(block)).(own, option, target, current_position) do
-          {:ok, children, remainder, position} = x -> x
-          {:ok, children, remainder} when is_binary(remainder) ->
-            {:ok, children, remainder, get_position(current_position, target, remainder)}
-          {:ok, children, consumed} when is_integer(consumed) ->
-            {:ok, children, String.slice(target, Range.new(consumed, -1)), get_position(current_position, target, consumed)}
-            {:error, message, position} = x -> x
-            {:error, message} -> {:error, message, current_position}
-            x -> {:error, "\"" <> unquote(name) <> "\" returns a misformed result.\n#{inspect x}", current_position}
-        end
+        format_result((unquote(block)).(own, option, target, current_position),
+                      unquote(name), target, current_position)
       end
     end
   end

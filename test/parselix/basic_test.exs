@@ -52,6 +52,14 @@ defmodule BasicTest do
   test "choice" do
     assert (choice([string("abcdefg"), string("bcd"), string("abc")])).("abcdef", %Position{})
     == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
+    string2 = fn str ->
+      str
+      |> String.graphemes()
+      |> Enum.map(fn char -> string(char) end)
+      |> sequence
+    end
+    assert (choice([string2.("abx"), string2.("abcdx"), string2.("abcx")])).("abcdef", %Position{})
+    == {:error, "There is not string.", %Position{index: 4, vertical: 0, horizontal: 4}}
   end
 
   test "option" do

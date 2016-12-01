@@ -77,17 +77,27 @@ defmodule Parselix.Basic do
   end
 
   @doc "Returns a result of the given parser which succeeds first."
-  parser "choice" do
-    fn _, option, target, position ->
-      found = Enum.map(option, fn parser -> parser.(target, position) end)
-      |> Enum.find(fn
-        {:ok, _,  _, _} -> true
-        _ -> false
-      end)
-      case found do
-          {:ok, ast, remainder, position} -> {:ok, ast, remainder, position}
-          _ -> {:error, "No parser succeeded."}
-        end
+  def choice([]) do
+    fn target, position ->
+      {:error, "No parser succeeded"}
+      |> format_result("choice", target, position)
+    end
+  end
+  def choice([parser | tail]) do
+    fn target, position ->
+      case parser.(target, position) do
+        {:ok, ast, remainder, position} = result -> result
+        {:error, _, pos1} = error1 ->
+          case choice(tail).(target, position) do
+            {:ok, ast, remainder, position} = result -> result
+            {:error, _, pos2} = error2 -> if pos1.index < pos2.index do
+              error2
+            else
+              error1
+            end
+          end
+      end
+      |> format_result("choice", target, position)
     end
   end
 
