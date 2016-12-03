@@ -49,7 +49,7 @@ defmodule Parselix.Basic do
       if String.starts_with?(target, option) do
         {:ok, option, String.length option}
       else
-        {:error, "There is not string."}
+        {:error, "There is not the string."}
       end
       |> format_result("string", target, position)
     end
@@ -292,8 +292,15 @@ defmodule Parselix.Basic do
   end
 
   @doc "Ignores the result of the given parser."
-  parser :ignore, [parser] do
-    parser |> option() |> dump()
+  def ignore(parser) do
+    fn target, position ->
+      parser
+      |> parse(target, position)
+      |> case do
+        {:ok, _, _, _} -> {:ok, :empty, target, position}
+        x -> x
+      end
+    end
   end
 
   @doc "Validates the result of the given parser."

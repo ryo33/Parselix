@@ -38,7 +38,7 @@ defmodule BasicTest do
     assert string("abc").("abcdef", %Position{})
     == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
     assert string("abx").("abcdef", %Position{})
-    == {:error, "There is not string.", %Position{}}
+    == {:error, "There is not the string.", %Position{}}
   end
 
   test "char" do
@@ -70,7 +70,7 @@ defmodule BasicTest do
     assert (choice([string("abcdefg"), string("bcd"), string("abc")])).("abcdef", %Position{})
     == {:ok, "abc", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
     assert (choice([string2("abx"), string2("abcdx"), string2("abcx")])).("abcdef", %Position{})
-    == {:error, "There is not string.", %Position{index: 4, vertical: 0, horizontal: 4}}
+    == {:error, "There is not the string.", %Position{index: 4, vertical: 0, horizontal: 4}}
   end
 
   test "option" do
@@ -91,7 +91,7 @@ defmodule BasicTest do
     assert replace(string("abc"), "replacement").("abcdef", %Position{})
     == {:ok, "replacement", "def", %Position{index: 3, vertical: 0, horizontal: 3}}
     assert replace(string("bc"), "replacement").("abcdef", %Position{index: 100})
-    == {:error, "There is not string.", position(100, 0, 0)}
+    == {:error, "There is not the string.", position(100, 0, 0)}
   end
 
   test "sequence" do
@@ -103,7 +103,7 @@ defmodule BasicTest do
           %Meta{label: nil, value: "ghi", position: %Position{index: 6, vertical: 0, horizontal: 6}}
         ], "jkl", %Position{index: 9, vertical: 0, horizontal: 9}}
     assert sequence([string("abc"), string("ddf"), string("ghi")]).("abcdefghijkl", %Position{})
-    == {:error, "There is not string.", %Parselix.Position{horizontal: 3, index: 3, vertical: 0}}
+    == {:error, "There is not the string.", %Parselix.Position{horizontal: 3, index: 3, vertical: 0}}
   end
 
   test "many" do
@@ -136,7 +136,7 @@ defmodule BasicTest do
 
   test "times" do
     assert times(string("abc"), 3).("abcabc", position)
-    == {:error, "There is not string.", %Parselix.Position{vertical: 0, horizontal: 6, index: 6}}
+    == {:error, "There is not the string.", %Parselix.Position{vertical: 0, horizontal: 6, index: 6}}
     assert times(string("abc"), 3).("abcabcabc", position)
     == {:ok, ["abc", "abc", "abc"], "", position(9, 0, 9)}
     assert times(string("abc"), 3).("abcabcabcabc", position)
@@ -149,7 +149,7 @@ defmodule BasicTest do
   end
 
   test "clean" do
-    assert [ignore(many(string("a"))), string("b"), string("c")] |> sequence |> clean |> parse("aaabcd", position)
+    assert [dump(many(string("a"))), string("b"), string("c")] |> sequence |> clean |> parse("aaabcd", position)
     == {:ok, ["b", "c"], "d", position(5, 0, 5)}
   end
 
@@ -209,14 +209,14 @@ defmodule BasicTest do
     assert dump(string("abc")).("abcdef", %Position{})
     == {:ok, :empty, "def", position(3, 0, 3)}
     assert dump(string("aac")).("abcdef", %Position{})
-    == {:error, "There is not string.", position(0, 0, 0)}
+    == {:error, "There is not the string.", position(0, 0, 0)}
   end
 
   test "ignore" do
     assert ignore(string("abc")).("abcdef", %Position{})
-    == {:ok, :empty, "def", position(3, 0, 3)}
-    assert ignore(string("aac")).("abcdef", %Position{})
     == {:ok, :empty, "abcdef", position(0, 0, 0)}
+    assert ignore(string("aac")).("abcdef", %Position{})
+    == {:error, "There is not the string.", position(0, 0, 0)}
   end
 
   test "check" do
