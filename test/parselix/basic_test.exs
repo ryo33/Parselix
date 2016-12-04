@@ -132,6 +132,10 @@ defmodule BasicTest do
     == {:ok, ["abc", "abc"], "", position(6, 0, 6)}
     assert many(string("abc"), 2).("abcabcabc", position)
     == {:ok, ["abc", "abc", "abc"], "", position(9, 0, 9)}
+    assert many(string("abc") |> dump).("abcabcabc", position)
+    == {:ok, [:empty, :empty, :empty], "", position(9, 0, 9)}
+    assert many(string("abc") |> map(fn _ -> [] end)).("abcabcabc", position)
+    == {:ok, [[], [], []], "", position(9, 0, 9)}
   end
 
   test "times" do
@@ -141,6 +145,10 @@ defmodule BasicTest do
     == {:ok, ["abc", "abc", "abc"], "", position(9, 0, 9)}
     assert times(string("abc"), 3).("abcabcabcabc", position)
     == {:ok, ["abc", "abc", "abc"], "abc", position(9, 0, 9)}
+    assert times(string("abc") |> dump, 3).("abcabcabc", position)
+    == {:ok, [:empty, :empty, :empty], "", position(9, 0, 9)}
+    assert times(string("abc") |> map(fn _ -> [] end), 3).("abcabcabc", position)
+    == {:ok, [[], [], []], "", position(9, 0, 9)}
   end
 
   test "map" do

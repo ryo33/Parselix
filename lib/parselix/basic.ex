@@ -161,22 +161,21 @@ defmodule Parselix.Basic do
         {:ok, [], target, position}
       else
         case parser.(target, position) do
-          {:ok, [], _, _} = result -> result
           {:ok, result, remainder, position} ->
             many(parser, min - 1, max - 1)
             |> map(fn tail_result ->
               [result | tail_result]
             end)
             |> parse(remainder, position)
-          x -> x
-        end
-        |> case do
           {:error, _, _} ->
             if min <= 0 do
               {:ok, [], target, position}
             else
               {:error, "The count is out of the range.", position}
             end
+        end
+        |> case do
+          {:error, message, _} -> {:error, message, position}
           x -> x
         end
       end
@@ -188,7 +187,6 @@ defmodule Parselix.Basic do
   def times(parser, time) do
     fn target, position ->
       case parser.(target, position) do
-        {:ok, [], _, _} = result -> result
         {:ok, result, remainder, position} ->
           times(parser, time - 1)
           |> map(fn tail_result ->
